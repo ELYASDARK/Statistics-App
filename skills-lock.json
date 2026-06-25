@@ -13,6 +13,18 @@
       "skillPath": "skills/docs-guard/SKILL.md",
       "computedHash": "7f288285488af47e10f6a1eef9a9e58e318f0ef863aa20baf596acb4cbf38616"
     },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "93f53fd1c0352d3d7ec17b8f73d7351bf76f4821e55d123c9d2abc2c53ba48e4"
+    },
+    "mobile-android-design": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/ui-design/skills/mobile-android-design/SKILL.md",
+      "computedHash": "143a60d6a0744a5058adf984e3a64b75cd2ef3714a15557f4ff6fd95e39ff23a"
+    },
     "test-guard": {
       "source": "amElnagdy/guard-skills",
       "sourceType": "github",

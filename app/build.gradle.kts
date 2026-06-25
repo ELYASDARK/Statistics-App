@@ -1,15 +1,17 @@
+@file:Suppress("DEPRECATION")
+
 plugins {
   alias(libs.plugins.android.application)
-  alias(libs.plugins.kotlinAndroid)
+  alias(libs.plugins.compose.compiler)
 }
 
 android {
     namespace = "com.uniteconomics.calculator"
-    compileSdk = 36
+    compileSdk = 37
     defaultConfig {
         applicationId = "com.uniteconomics.calculator"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
     }
@@ -26,7 +28,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
-      compose = false
+      compose = true
       aidl = false
       buildConfig = false
       shaders = false
@@ -50,14 +52,19 @@ dependencies {
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.activity.compose)
 
-  // Material 3 (for Theme.Material3.DayNight.NoActionBar)
+  // Jetpack Compose dependencies
+  implementation(platform(libs.androidx.compose.bom))
+  implementation(libs.androidx.compose.ui)
+  implementation(libs.androidx.compose.ui.tooling.preview)
+  implementation(libs.androidx.compose.material3)
+  implementation("androidx.compose.material:material-icons-core")
   implementation(libs.material)
+  implementation(libs.androidx.lifecycle.runtime.compose)
+  implementation(libs.androidx.lifecycle.viewmodel.compose)
+  debugImplementation(libs.androidx.compose.ui.tooling)
 
   // Splash Screen compat (supports API 23+)
   implementation(libs.androidx.core.splashscreen)
-
-  // WebKit for WebViewAssetLoader + WebSettingsCompat
-  implementation(libs.androidx.webkit)
 
   // Testing dependencies
   testImplementation(libs.junit)
