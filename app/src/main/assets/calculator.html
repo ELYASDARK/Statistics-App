@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a0f">
+    
+    <title>هەژمارکەری ئابووری یەکە</title>
+    <style>
+        :root {
+            --bg-color: #0a0a0f;
+            --surface: #1a1a24;
+            --surface-hover: #22222e;
+            --text-main: #f0f0f5;
+            --text-muted: #8a8a9a;
+            --accent: #4ade80;
+            --accent-glow: rgba(74, 222, 128, 0.25);
+            --warning: #f59e0b;
+            --warning-glow: rgba(245, 158, 11, 0.15);
+            --danger: #f87171;
+            --danger-glow: rgba(248, 113, 113, 0.15);
+            --info: #60a5fa;
+            --info-glow: rgba(96, 165, 250, 0.15);
+            --purple: #c084fc;
+            --purple-glow: rgba(192, 132, 252, 0.15);
+            --border: rgba(255, 255, 255, 0.06);
+            --border-light: rgba(255, 255, 255, 0.1);
+            --section-bg: rgba(255, 255, 255, 0.02);
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.06);
+            --radius: 14px;
+            --radius-sm: 10px;
+        }
+
+        /* === Smooth Scroll & Overscroll === */
+        html {
+            scroll-behavior: smooth;
+            overscroll-behavior: none;
+        }
+
+        body {
+            background: linear-gradient(168deg, #0a0a0f 0%, #0d0e18 40%, #0a0c14 70%, #0a0a0f 100%);
+            color: var(--text-main);
+            font-family: "Noto Sans Arabic", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            padding-bottom: 60px;
+            user-select: none;
+            -webkit-user-select: none;
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* === Premium Header === */
+        .app-header {
+            background: linear-gradient(135deg, rgba(74, 222, 128, 0.08) 0%, rgba(96, 165, 250, 0.05) 50%, transparent 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 28px 24px 22px;
+            margin-bottom: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        .app-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -30%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(74, 222, 128, 0.06) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .app-header::after {
+            content: '';
+            position: absolute;
+            bottom: -60%;
+            left: -20%;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(96, 165, 250, 0.04) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .header-icon {
+            font-size: 28px;
+            margin-bottom: 6px;
+            display: inline-block;
+            filter: drop-shadow(0 0 8px rgba(74, 222, 128, 0.3));
+        }
+        .app-header h2 {
+            font-weight: 600;
+            font-size: 22px;
+            margin: 0;
+            letter-spacing: 0.3px;
+            line-height: 1.4;
+            position: relative;
+        }
+        .header-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            letter-spacing: 0.5px;
+            position: relative;
+        }
+
+        /* === Main Content Padding === */
+        .content-wrapper {
+            padding: 12px 20px;
+        }
+
+        /* === Section Cards === */
+        .section-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 6px 16px 10px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.3s ease;
+        }
+
+        /* === Section Titles === */
+        .section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-top: 14px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title .icon {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        .section-title.primary { color: var(--accent); border-bottom-color: var(--accent-glow); }
+        .section-title.danger { color: var(--warning); border-bottom-color: var(--warning-glow); }
+        .section-title.secondary { color: var(--text-muted); }
+        .section-title.macro { color: var(--info); border-bottom-color: var(--info-glow); }
+        .section-title.capital { color: var(--purple); font-weight: 700; border-bottom-color: var(--purple-glow); }
+        
+        /* === Row Styles === */
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 13px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+            transition: background-color 0.2s ease;
+            line-height: 1.5;
+        }
+        .row:last-child { border-bottom: none; }
+        .row-bg {
+            background-color: var(--surface);
+            padding: 13px 14px;
+            margin: 3px -16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid transparent;
+            transition: all 0.25s ease;
+        }
+        .row-bg:active {
+            background-color: var(--surface-hover);
+        }
+        
+        /* === Input Styles === */
+        .val-input {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid transparent;
+            color: var(--text-main);
+            text-align: left;
+            font-size: 15px;
+            width: 80px;
+            outline: none;
+            user-select: text; 
+            -webkit-user-select: text;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .val-input:focus {
+            border-bottom: 1.5px solid var(--accent);
+            background: rgba(74, 222, 128, 0.05);
+            transform: scale(1.03);
+        }
+        
+        /* === Enhanced Metric Status Indicators === */
+        .metric-good { 
+            border-right: 3px solid var(--accent); 
+            color: var(--accent) !important; 
+            padding-right: 5px;
+            background: linear-gradient(to left, rgba(74, 222, 128, 0.08), transparent 60%) !important;
+            transition: all 0.4s ease;
+        }
+        .metric-avg { 
+            border-right: 3px solid var(--warning); 
+            color: var(--warning) !important; 
+            padding-right: 5px;
+            background: linear-gradient(to left, rgba(245, 158, 11, 0.08), transparent 60%) !important;
+            transition: all 0.4s ease;
+        }
+        .metric-bad { 
+            border-right: 3px solid var(--danger); 
+            color: var(--danger) !important; 
+            padding-right: 5px;
+            background: linear-gradient(to left, rgba(248, 113, 113, 0.08), transparent 60%) !important;
+            transition: all 0.4s ease;
+        }
+
+        .currency { color: var(--text-muted); font-size: 12px; margin-right: 5px; letter-spacing: 0.3px; }
+        
+        .status-healthy { color: var(--accent); font-weight: 600; font-size: 14px; }
+        .status-warning { color: var(--danger); font-weight: 600; font-size: 14px; }
+        
+        /* === Net Profit Highlight === */
+        .net-profit-row {
+            background: linear-gradient(135deg, rgba(74, 222, 128, 0.06) 0%, rgba(26, 26, 36, 0.9) 100%) !important;
+            border: 1px solid rgba(74, 222, 128, 0.15) !important;
+            margin-top: 16px !important;
+            border-radius: var(--radius-sm) !important;
+            position: relative;
+            overflow: hidden;
+        }
+        .net-profit-row::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(74, 222, 128, 0.03), transparent);
+            animation: shimmer 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes shimmer {
+            0%, 100% { opacity: 0; transform: translateX(-100%); }
+            50% { opacity: 1; transform: translateX(100%); }
+        }
+        #txt-net-profit {
+            font-weight: 700 !important;
+            font-size: 16px;
+            transition: all 0.4s ease;
+        }
+        .profit-pulse {
+            animation: profitPulse 0.6s ease;
+        }
+        @keyframes profitPulse {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.08); text-shadow: 0 0 12px var(--accent-glow); }
+            100% { transform: scale(1); text-shadow: none; }
+        }
+
+        /* === Glassmorphism Summary Container === */
+        .summary-container {
+            margin-top: 20px;
+            margin-bottom: 8px;
+            padding: 22px 16px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        .summary-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            pointer-events: none;
+        }
+        .summary-item {
+            margin-bottom: 18px;
+            width: 45%;
+            padding: 8px 0;
+        }
+        .summary-item.full-width {
+            width: 100%;
+            margin-bottom: 0;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+            margin-top: 4px;
+        }
+        .summary-label {
+            color: var(--text-muted);
+            font-size: 12px;
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+            line-height: 1.5;
+        }
+        .summary-val {
+            font-size: 18px;
+            font-weight: 600;
+            transition: all 0.4s ease;
+            letter-spacing: 0.2px;
+        }
+
+        /* === Custom Range Slider === */
+        .sliders-section {
+            margin-top: 10px;
+        }
+        .slider-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 18px;
+            font-size: 13px;
+        }
+        .slider-label {
+            width: 100px;
+            color: var(--text-main);
+            font-weight: 500;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        /* Custom Range Slider Styling */
+        input[type=range] {
+            flex-grow: 1;
+            margin: 0 14px;
+            direction: ltr;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            outline: none;
+            transition: background 0.2s ease;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--accent-glow), 0 2px 6px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        input[type=range]::-webkit-slider-thumb:active {
+            transform: scale(1.2);
+            box-shadow: 0 0 16px var(--accent-glow), 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+        input[type=range]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            box-shadow: 0 0 8px var(--accent-glow), 0 2px 6px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        input[type=range]::-moz-range-track {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            border: none;
+        }
+
+        .slider-val-box {
+            background: var(--surface);
+            padding: 10px;
+            border-radius: var(--radius-sm);
+            width: 58px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 13px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            letter-spacing: 0.2px;
+        }
+
+        /* === Capital Section Special Rows === */
+        .capital-row-purple {
+            border-right: 3px solid var(--purple) !important;
+            background: linear-gradient(to left, rgba(192, 132, 252, 0.06), rgba(26, 16, 37, 0.8)) !important;
+        }
+        .capital-row-danger {
+            border-right: 3px solid var(--danger) !important;
+            background: linear-gradient(to left, rgba(248, 113, 113, 0.06), rgba(42, 16, 16, 0.8)) !important;
+        }
+
+        /* === Result Rows with Special Borders === */
+        .row-accent-border { border-right: 3px solid var(--accent); }
+        .row-warning-border { border-right: 3px solid var(--warning); }
+        .row-info-border { border-right: 3px solid var(--info); }
+        .row-purple-border { border-right: 3px solid var(--purple); }
+
+        /* === Reset Button === */
+        .reset-section {
+            padding: 8px 0 20px;
+            text-align: center;
+        }
+        .reset-btn {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 32px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .reset-btn:active {
+            background: rgba(248, 113, 113, 0.1);
+            border-color: var(--danger);
+            color: var(--danger);
+            transform: scale(0.97);
+        }
+        .reset-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 0; height: 0;
+            background: rgba(248, 113, 113, 0.15);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+        .reset-btn:active::after {
+            width: 200px;
+            height: 200px;
+        }
+
+        /* === Divider Line === */
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+            margin: 6px 0;
+        }
+
+        /* === Status row special === */
+        .status-row {
+            background: transparent !important;
+            border: none !important;
+            padding: 14px 0 !important;
+            margin: 0 !important;
+        }
+
+        /* === Animations for metric status changes === */
+        @keyframes statusChange {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 1; }
+        }
+
+        /* === small text styles === */
+        small {
+            line-height: 1.4;
+        }
+
+        /* ============================= */
+        /* === LIGHT MODE THEME ======== */
+        /* ============================= */
+        [data-theme='light'] {
+            --bg-color: #f5f5f7;
+            --surface: #ffffff;
+            --surface-hover: #f0f0f2;
+            --text-main: #1a1a2e;
+            --text-muted: #6b6b80;
+            --accent: #16a34a;
+            --accent-glow: rgba(22, 163, 74, 0.2);
+            --warning: #d97706;
+            --warning-glow: rgba(217, 119, 6, 0.12);
+            --danger: #dc2626;
+            --danger-glow: rgba(220, 38, 38, 0.12);
+            --info: #2563eb;
+            --info-glow: rgba(37, 99, 235, 0.12);
+            --purple: #9333ea;
+            --purple-glow: rgba(147, 51, 234, 0.12);
+            --border: rgba(0, 0, 0, 0.08);
+            --border-light: rgba(0, 0, 0, 0.12);
+            --section-bg: rgba(0, 0, 0, 0.02);
+            --card-bg: #ffffff;
+            --card-border: rgba(0, 0, 0, 0.08);
+        }
+        [data-theme='light'] body {
+            background: linear-gradient(168deg, #f5f5f7 0%, #eef0f5 40%, #f0f2f8 70%, #f5f5f7 100%);
+        }
+        [data-theme='light'] .app-header {
+            background: linear-gradient(135deg, rgba(22, 163, 74, 0.06) 0%, rgba(37, 99, 235, 0.04) 50%, transparent 100%);
+        }
+        [data-theme='light'] .app-header::before {
+            background: radial-gradient(circle, rgba(22, 163, 74, 0.05) 0%, transparent 70%);
+        }
+        [data-theme='light'] .app-header::after {
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.03) 0%, transparent 70%);
+        }
+        [data-theme='light'] .header-icon {
+            filter: drop-shadow(0 0 6px rgba(22, 163, 74, 0.2));
+        }
+        [data-theme='light'] .section-card {
+            box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+        }
+        [data-theme='light'] .summary-container {
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        [data-theme='light'] .summary-container::before {
+            background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.04), transparent);
+        }
+        [data-theme='light'] .val-input {
+            color: var(--text-main);
+        }
+        [data-theme='light'] .val-input:focus {
+            background: rgba(22, 163, 74, 0.06);
+        }
+        [data-theme='light'] .net-profit-row {
+            background: linear-gradient(135deg, rgba(22, 163, 74, 0.06) 0%, rgba(255, 255, 255, 0.95) 100%) !important;
+            border: 1px solid rgba(22, 163, 74, 0.15) !important;
+        }
+        [data-theme='light'] .capital-row-purple {
+            background: linear-gradient(to left, rgba(147, 51, 234, 0.06), rgba(255, 255, 255, 0.95)) !important;
+        }
+        [data-theme='light'] .capital-row-danger {
+            background: linear-gradient(to left, rgba(220, 38, 38, 0.06), rgba(255, 255, 255, 0.95)) !important;
+        }
+        [data-theme='light'] .metric-good {
+            background: linear-gradient(to left, rgba(22, 163, 74, 0.06), transparent 60%) !important;
+        }
+        [data-theme='light'] .metric-avg {
+            background: linear-gradient(to left, rgba(217, 119, 6, 0.06), transparent 60%) !important;
+        }
+        [data-theme='light'] .metric-bad {
+            background: linear-gradient(to left, rgba(220, 38, 38, 0.06), transparent 60%) !important;
+        }
+        [data-theme='light'] input[type=range] {
+            background: rgba(0, 0, 0, 0.08);
+        }
+        [data-theme='light'] .slider-val-box {
+            background: #f5f5f7;
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+        [data-theme='light'] .reset-btn {
+            border-color: rgba(0, 0, 0, 0.15);
+            color: var(--text-muted);
+        }
+        [data-theme='light'] .reset-btn:active {
+            background: rgba(220, 38, 38, 0.08);
+        }
+        [data-theme='light'] .reset-btn::after {
+            background: rgba(220, 38, 38, 0.12);
+        }
+        [data-theme='light'] .net-profit-row::before {
+            background: linear-gradient(90deg, transparent, rgba(22, 163, 74, 0.08), transparent);
+        }
+        [data-theme='light'] input[type=range]::-moz-range-track {
+            background: rgba(0, 0, 0, 0.08);
+        }
+        [data-theme='light'] input[type=range]::-webkit-slider-thumb {
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 6px var(--accent-glow), 0 1px 4px rgba(0, 0, 0, 0.2);
+        }
+        [data-theme='light'] input[type=range]::-moz-range-thumb {
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 6px var(--accent-glow), 0 1px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* === Theme Toggle Button === */
+        .theme-toggle {
+            position: absolute;
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        .theme-toggle:active {
+            transform: translateY(-50%) scale(0.9);
+        }
+        [data-theme='light'] .theme-toggle {
+            background: rgba(0, 0, 0, 0.05);
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        /* === Tooltip, Toggle Switch & Modal Overlay Styles === */
+        .info-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            border-radius: 50%;
+            font-size: 11px;
+            font-weight: 800;
+            margin-right: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: Arial, sans-serif;
+        }
+        .info-icon:hover {
+            background-color: var(--info);
+            color: #ffffff;
+            transform: scale(1.1);
+        }
+        [data-theme='light'] .info-icon {
+            background-color: rgba(0, 0, 0, 0.06);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-flex;
+            width: 34px;
+            height: 20px;
+            margin-right: 12px;
+            flex-shrink: 0;
+            direction: ltr;
+        }
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255, 255, 255, 0.15);
+            transition: .3s ease;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .3s ease;
+            border-radius: 50%;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+        }
+        input:checked + .slider {
+            background-color: var(--info);
+        }
+        input:checked + .slider:before {
+            transform: translateX(14px);
+        }
+        [data-theme='light'] .slider {
+            background-color: rgba(0, 0, 0, 0.15);
+        }
+
+        .input-group {
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
+            transition: opacity 0.3s ease, filter 0.3s ease;
+        }
+        .input-group.disabled {
+            opacity: 0.3;
+            pointer-events: none;
+            filter: grayscale(100%);
+        }
+
+        .row-highlight-success {
+            background: linear-gradient(135deg, rgba(74, 222, 128, 0.08) 0%, rgba(26, 26, 36, 0.9) 100%) !important;
+            border: 1px solid rgba(74, 222, 128, 0.2) !important;
+            margin-top: 16px !important;
+            border-radius: var(--radius-sm) !important;
+            position: relative;
+            overflow: hidden;
+        }
+        [data-theme='light'] .row-highlight-success {
+            background: linear-gradient(135deg, rgba(22, 163, 74, 0.08) 0%, rgba(255, 255, 255, 0.95) 100%) !important;
+            border: 1px solid rgba(22, 163, 74, 0.2) !important;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 10, 15, 0.8);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-content {
+            background: var(--surface);
+            padding: 24px;
+            border-radius: var(--radius);
+            width: 85%;
+            max-width: 380px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-light);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+        .modal-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--text-main);
+            margin-bottom: 12px;
+        }
+        .modal-body {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        .modal-btn {
+            background: var(--accent);
+            color: #0a0a0f;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            font-family: inherit;
+        }
+        .modal-btn:active {
+            opacity: 0.9;
+        }
+        [data-theme='light'] .modal-overlay {
+            background: rgba(0, 0, 0, 0.5);
+        }
+        [data-theme='light'] .modal-content {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        [data-theme='light'] .modal-btn {
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Premium Header -->
+    <div class="app-header">
+        <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">🌙</button>
+        <div class="header-icon">📊</div>
+        <h2>هەژمارکەری ئابووری یەکە</h2>
+        <div class="header-subtitle">Unit Economics Calculator</div>
+    </div>
+
+    <div class="content-wrapper">
+
+    <!-- Section 1: Core Costs -->
+    <div class="section-card">
+    <div class="section-title primary"><span class="icon">💰</span>تێچووە سەرەکییەکان (بۆ هەر کاڵایەک/داواکارییەک)</div>
+    <div class="row">
+        <span>نرخی فرۆشتن (بنەڕەت) <span class="info-icon" onclick="openModal('Unit Retail Price (Gross)')">؟</span></span>
+        <div><input type="number" id="inp-retail" class="val-input" value="35000" oninput="syncFromInput()"><span class="currency">دینار</span></div>
+    </div>
+    <div class="row row-bg">
+        <span>تێچووی کڕینی جوملە <span class="info-icon" onclick="openModal('Cost of Goods Sold (COGS)')">؟</span></span>
+        <div>-<input type="number" id="inp-sourcing" class="val-input" value="10000" oninput="syncFromInput()"><span class="currency">دینار</span></div>
+    </div>
+    <div class="row row-bg">
+        <span>تێچووی ناردن و گەیاندن <span class="info-icon" onclick="openModal('Outbound Freight / Shipping Cost')">؟</span></span>
+        <div>-<input type="number" id="inp-shipping" class="val-input" value="4000" oninput="syncFromInput()"><span class="currency">دینار</span></div>
+    </div>
+    <div class="row row-bg">
+        <span>تێچووی ڕێکلام (CAC) <span class="info-icon" onclick="openModal('Customer Acquisition Cost (CAC)')">؟</span></span>
+        <div>-<input type="number" id="inp-cac" class="val-input" value="5000" oninput="syncFromInput()"><span class="currency">دینار</span></div>
+    </div>
+    <div class="row row-bg row-accent-border">
+        <span>کرێی پارەخستنەسەر سەکۆی ڕێکلام <span class="info-icon" onclick="openModal('Payment Gateway / FX Fee')">؟</span><br><small style="color:var(--text-muted); font-size:11px;">(ڕێژەی کرێی کارت/گۆڕینەوە)</small></span>
+        <div>-<input type="number" id="inp-ad-fee" class="val-input" value="3" oninput="calculate()"><span class="currency">%</span></div>
+    </div>
+    <div class="row row-bg">
+        <span>پاکەتکردن و ئامادەکردن <span class="info-icon" onclick="openModal('Fulfillment (Pick & Pack) Cost')">؟</span></span>
+        <div>-<input type="number" id="inp-pack" class="val-input" value="500" oninput="calculate()"><span class="currency">دینار</span></div>
+    </div>
+    <div class="row row-bg row-accent-border">
+        <span>پەیوەندی / دووپاتکردنەوەی داواکاری <span class="info-icon" onclick="openModal('Order Verification Cost')">؟</span><br><small style="color:var(--text-muted); font-size:11px;">(پەیوەندی/واتسئاپ بۆ هەر داواکارییەک)</small></span>
+        <div>-<input type="number" id="inp-telecom" class="val-input" value="250" oninput="calculate()"><span class="currency">دینار</span></div>
+    </div>
+    </div>
+    
+    <!-- Section 2: Rejections -->
+    <div class="section-card">
+    <div class="section-title danger"><span class="icon">⚠️</span>ڕەتکردنەوە و زیانەکان (گرنگ)</div>
+    <div class="row row-bg row-warning-border">
+        <span>ڕێژەی ڕەتکردنەوە (لەکاتی گەیاندن) <span class="info-icon" onclick="openModal('Order Refusal (RTS) Rate')">؟</span></span>
+        <div><input type="number" id="inp-reject" class="val-input" value="20" oninput="calculate()"><span class="currency">%</span></div>
+    </div>
+    <div class="row row-bg row-warning-border">
+        <span>تێچووی گەڕاندنەوەی گەیاندن <span class="info-icon" onclick="openModal('Reverse Logistics (RTS) Fee')">؟</span></span>
+        <div>-<input type="number" id="inp-return" class="val-input" value="5000" oninput="calculate()"><span class="currency">دینار</span></div>
+    </div>
+    <div class="row row-bg row-warning-border">
+        <span>ڕێژەی کاڵای زیانپێکەوتوو/ونبوو <span class="info-icon" onclick="openModal('Inventory Shrinkage Rate')">؟</span>
+            <label class="switch">
+                <input type="checkbox" id="switch-damage" onchange="toggleFeature('damage')" checked>
+                <span class="slider"></span>
+            </label>
+        </span>
+        <div class="input-group" id="group-damage">
+            -<input type="number" id="inp-damage" class="val-input" value="5" oninput="calculate()"><span class="currency">%</span>
+        </div>
+    </div>
+    <div class="row row-bg row-warning-border">
+        <span>ڕێژەی کاڵای نەفرۆشراو <span class="info-icon" onclick="openModal('Inventory Obsolescence Rate')">؟</span>
+            <label class="switch">
+                <input type="checkbox" id="switch-deadstock" onchange="toggleFeature('deadstock')" checked>
+                <span class="slider"></span>
+            </label>
+            <br><small style="color:var(--text-muted); font-size:11px;">(کاڵا نەفرۆشراوەکانی لای جوملەفرۆش)</small>
+        </span>
+        <div class="input-group" id="group-deadstock">
+            -<input type="number" id="inp-deadstock" class="val-input" value="2" oninput="calculate()"><span class="currency">%</span>
+        </div>
+    </div>
+    </div>
+
+    <!-- Net Profit Row -->
+    <div class="row row-bg net-profit-row">
+        <span>قازانجی سەرەتایی هەر کاڵایەک <span class="info-icon" onclick="openModal('Contribution Margin per Unit')">؟</span></span>
+        <span id="txt-net-profit" style="font-weight:bold; color: var(--accent);">0 دینار</span>
+    </div>
+
+    <!-- Section 3: Side Factors -->
+    <div class="section-card" style="margin-top: 18px;">
+    <div class="section-title secondary"><span class="icon">🔧</span>هۆکارە لاوەکییەکان (باشترکردن)</div>
+    <div class="row">
+        <span>تێکڕای ڕێژەی داشکاندن <span class="info-icon" onclick="openModal('Trade Discount Rate')">؟</span>
+            <label class="switch">
+                <input type="checkbox" id="switch-discount" onchange="toggleFeature('discount')" checked>
+                <span class="slider"></span>
+            </label>
+        </span>
+        <div class="input-group" id="group-discount">
+            <input type="number" id="inp-discount" class="val-input" value="0" oninput="calculate()"><span class="currency">%</span>
+        </div>
+    </div>
+    <div class="row row-bg row-info-border">
+        <span>بەهای کڕیار بەدرێژایی کات <span class="info-icon" onclick="openModal('Customer Lifetime Value (LTV)')">؟</span>
+            <label class="switch">
+                <input type="checkbox" id="switch-ltv" onchange="toggleFeature('ltv')" checked>
+                <span class="slider"></span>
+            </label>
+            <br><small style="color:var(--text-muted); font-size:11px;">(تێکڕای کڕینەکانی کڕیار)</small>
+        </span>
+        <div class="input-group" id="group-ltv">
+            <input type="number" id="inp-ltv" class="val-input" value="1.1" step="0.1" oninput="calculate()"><span class="currency">دانە</span>
+        </div>
+    </div>
+    <div class="row row-bg">
+        <span>ڕێژەی گەڕاندنەوەی پارە دوای گەیاندن <span class="info-icon" onclick="openModal('Post-Delivery Return Rate')">؟</span>
+            <label class="switch">
+                <input type="checkbox" id="switch-refund" onchange="toggleFeature('refund')" checked>
+                <span class="slider"></span>
+            </label>
+        </span>
+        <div class="input-group" id="group-refund">
+            <input type="number" id="inp-refund" class="val-input" value="1" oninput="calculate()"><span class="currency">%</span>
+        </div>
+    </div>
+    <div class="row row-bg">
+        <span>ژمارەی کاڵا لە هەر داواکارییەکدا (AOV) <span class="info-icon" onclick="openModal('Units Per Transaction (UPT)')">؟</span></span>
+        <div><input type="number" id="inp-aov" class="val-input" value="1.0" step="0.1" oninput="calculate()"><span class="currency">دانە</span></div>
+    </div>
+    </div>
+
+    <!-- Section 4: Macro Metrics -->
+    <div class="section-card">
+    <div class="section-title macro"><span class="icon">📈</span>پێوەرە گشتییەکانی کار و نەختینە</div>
+    <div class="row row-bg">
+        <span>خەرجی کارپێکردن (کرێ، غاز...) <span class="info-icon" onclick="openModal('Fixed Operating Expenses (OPEX)')">؟</span><br><small style="color:var(--text-muted); font-size:11px;">(سووتەمەنی، ئامرازەکانی ڕێکلام، هتد)</small></span>
+        <div>-<input type="number" id="inp-opex" class="val-input" value="150000" oninput="calculate()"><span class="currency">دینار</span></div>
+    </div>
+    <div class="row row-bg row-info-border">
+        <span>کۆی مووچەی کارمەندان <span class="info-icon" onclick="openModal('Fixed Payroll & Labor Costs')">؟</span><br><small style="color:var(--text-muted); font-size:11px;">(دەستی کاری جێگیر/بەڕێوەبردن)</small></span>
+        <div>-<input type="number" id="inp-salary" class="val-input" value="300000" oninput="calculate()"><span class="currency">دینار</span></div>
+    </div>
+    <div class="row row-bg row-purple-border">
+        <span>دواکەوتنی پارەی گەیاندن <span class="info-icon" onclick="openModal('Cash Conversion Cycle')">؟</span><br><small style="color:var(--text-muted); font-size:11px;">(ئەو ڕۆژانەی کۆمپانیای گەیاندن پارەکەت لای خۆی دەهێڵێتەوە)</small></span>
+        <div><input type="number" id="inp-remit" class="val-input" value="7" oninput="calculate()"><span class="currency">ڕۆژ</span></div>
+    </div>
+    <div class="row row-bg">
+        <span>ئامانجی قازانجی ساف <span class="info-icon" onclick="openModal('Target Net Income')">؟</span></span>
+        <div><input type="number" id="inp-goal" class="val-input" value="1000000" oninput="calculate()"><span class="currency">دینار</span></div>
+    </div>
+    <div class="row row-bg">
+        <span>ماوەی کارکردن <span class="info-icon" onclick="openModal('Operational Period')">؟</span></span>
+        <div><input type="number" id="inp-days" class="val-input" value="30" oninput="calculate()"></div>
+    </div>
+    
+    <!-- Fully Allocated Net Profit Row -->
+    <div class="row row-highlight-success">
+        <span>پوختەی قازانجی ڕاستەقینە لە هەر داواکارییەک <span class="info-icon" onclick="openModal('Fully Allocated Net Profit per Unit')">؟</span><br><small style="color:var(--text-muted); font-size:11px;">ئەو قازانجەی دەچێتە گیرفانتەوە دوای هەموو خەرجییەکان</small></span>
+        <span id="txt-true-net" style="font-weight:bold; color: var(--accent);">0 دینار</span>
+    </div>
+    </div>
+
+    <!-- Section 5: Projections -->
+    <div class="section-card">
+    <div class="section-title"><span class="icon">🎯</span>ئەنجامە پێشبینیکراوەکان</div>
+    <div class="row row-bg row-info-border">
+        <span>خاڵی یەکسانبوون (تەنها دەرکردنی تێچووەکان) <span class="info-icon" onclick="openModal('Unit Sales Break-Even Point')">؟</span></span>
+        <span id="txt-breakeven">0 داواکاری</span>
+    </div>
+    <div class="row row-bg">
+        <span>ژمارەی داواکارییە سەرکەوتووەکانی پێویست <span class="info-icon" onclick="openModal('Required Successful Conversions')">؟</span></span>
+        <span id="txt-total-units">0</span>
+    </div>
+    <div class="row row-bg">
+        <span>کۆی ئەو داواکارییانەی دەبێت بیاننێریت <span class="info-icon" onclick="openModal('Gross Shipped Volume')">؟</span></span>
+        <span id="txt-orders-sent" style="color: var(--warning);">0</span>
+    </div>
+    <div class="row row-bg">
+        <span>ئامانجی ڕۆژانەی سەرکەوتوو</span>
+        <span id="txt-daily-sales">0</span>
+    </div>
+    <div class="row status-row">
+        <span>دۆخی کار</span>
+        <span id="txt-status" class="status-healthy">✅ ئامانجی تەندروست</span>
+    </div>
+    </div>
+
+    <!-- Section 6: Capital -->
+    <div class="section-card">
+    <div class="section-title capital"><span class="icon">🏦</span>نەختینەی گرنگ (ڕەوتی پارە)</div>
+    <div class="row row-bg capital-row-purple">
+        <span>کۆی سەرمایەی پێویست بەکارهاتوو <span class="info-icon" onclick="openModal('Total Capital Deployment')">؟</span><br><small style="color:var(--text-muted); font-size:11px;">(کۆی خەرجکراو لە تەواوی ماوەکەدا)</small></span>
+        <span id="txt-capital" style="font-weight:bold; color: var(--purple);">0 دینار</span>
+    </div>
+    <div class="row row-bg capital-row-danger">
+        <span>سەرمایەی ئامادەکراو بۆ سووڕانەوەی کار <span class="info-icon" onclick="openModal('Required Working Capital Float')">؟</span><br><small style="color:var(--text-muted); font-size:11px;">(ئەو پارەیەی پێویستە لە گیرفانتدا بێت کاتێک پارەکەت لای گەیاندنە)</small></span>
+        <span id="txt-float" style="font-weight:bold; color: var(--danger);">0 دینار</span>
+    </div>
+    </div>
+
+    <!-- Glassmorphism Summary -->
+    <div class="summary-container">
+        <div class="summary-item">
+            <div class="summary-label">قازانجی ساف / داواکاری</div>
+            <div class="summary-val" id="sum-net">0 دینار</div>
+        </div>
+        <div class="summary-item">
+            <div class="summary-label">داواکارییە پێویستەکان</div>
+            <div class="summary-val" id="sum-units">0</div>
+        </div>
+        <div class="summary-item full-width">
+            <div class="summary-label">داواکارییە سەرکەوتووەکانی پێویست لە ڕۆژێکدا</div>
+            <div class="summary-val" id="sum-daily" style="color: var(--accent); font-size: 22px;">0</div>
+        </div>
+    </div>
+
+    <!-- Sliders Section -->
+    <div class="section-card" style="margin-top: 18px;">
+    <div class="section-title"><span class="icon">🎚️</span>گۆڕینی خێرا</div>
+    <div class="sliders-section">
+        <div class="slider-row">
+            <div class="slider-label">تێچووی کاڵا</div>
+            <input type="range" id="slide-sourcing" min="0" max="50000" step="1000" value="10000" oninput="syncFromSlider()">
+            <div class="slider-val-box" id="box-sourcing">10k</div>
+        </div>
+        <div class="slider-row">
+            <div class="slider-label">نرخی فرۆشتن</div>
+            <input type="range" id="slide-retail" min="0" max="150000" step="1000" value="35000" oninput="syncFromSlider()">
+            <div class="slider-val-box" id="box-retail">35k</div>
+        </div>
+        <div class="slider-row">
+            <div class="slider-label">تێچووی گەیاندن</div>
+            <input type="range" id="slide-shipping" min="0" max="15000" step="500" value="4000" oninput="syncFromSlider()">
+            <div class="slider-val-box" id="box-shipping">4k</div>
+        </div>
+        <div class="slider-row">
+            <div class="slider-label">تێچووی ڕێکلام</div>
+            <input type="range" id="slide-cac" min="0" max="25000" step="500" value="5000" oninput="syncFromSlider()">
+            <div class="slider-val-box" id="box-cac">5k</div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Reset Button -->
+    <div class="reset-section">
+        <button class="reset-btn" onclick="resetDefaults()">🔄 گەڕانەوە بۆ بنەڕەت</button>
+    </div>
+
+    </div><!-- end content-wrapper -->
+
+    <!-- Info Modal -->
+    <div id="infoModal" class="modal-overlay" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-title" id="modalTitle">دەستەواژە</div>
+            <div class="modal-body" id="modalBody">ڕوونکردنەوە لێرە دەنووسرێت.</div>
+            <button class="modal-btn" onclick="closeModal()">تێگەیشتم</button>
+        </div>
+    </div>
+
+    <script>
+        const businessTerms = {
+            "Unit Retail Price (Gross)": "ئەو نرخە کۆتاییەی کە کڕیار دەیبینێت و کاڵاکەی پێ دەفرۆشیت.",
+            "Cost of Goods Sold (COGS)": "تێچووی کڕین یان دروستکردنی یەک دانە لە کاڵاکەت بە کۆمەڵ.",
+            "Units Per Transaction (UPT)": "تێکڕای ژمارەی ئەو کاڵایانەی کە کڕیارێک لە یەک داواکارییدا دەیکڕێت. ئەگەر کڕیارەکانت زیاتر لە یەک کاڵا پێکەوە بکڕن، قازانجت زۆر زیاد دەکات.",
+            "Trade Discount Rate": "ئەو داشکاندنەی کە وەک ئۆفەر دەیدەیت بە کڕیارەکانت. ئەگەر داشکاندن ناکەیت، ئەمە بکوژێنەوە.",
+            "Customer Acquisition Cost (CAC)": "تێچووی ڕیکلام کردن (وەک سپۆنسەری فەیسبووک و تیکتۆک) بۆ دەستکەوتنی یەک داواکاریی سەرکەوتوو.",
+            "Payment Gateway / FX Fee": "ئەو بڕە پارە زیادیەی کە بانکەکان یان کۆمپانیاکانی ڕیکلام لێتی دەبڕن لە کاتی پارەدان بە کارت.",
+            "Customer Lifetime Value (LTV)": "پێشبینی ئەوەی کە کڕیارێک لە داهاتوودا چەند جارێکی تر کاڵات لێ دەکڕێتەوە، کە تێچووی ڕیکلامت لەسەر کەم دەکاتەوە. ئەگەر کڕیارەکانت تەنها یەک جار شت دەکڕن، ئەمە بکوژێنەوە.",
+            "Outbound Freight / Shipping Cost": "ئەو پارەیەی دەیدەیت بە کۆمپانیای گەیاندن بۆ گەیاندنی کاڵاکە. ئەم پارەیە دەبێت بدرێت تەنانەت ئەگەر کڕیارەکە کاڵاکە ڕەتیش بکاتەوە.",
+            "Fulfillment (Pick & Pack) Cost": "تێچووی کڕینی کارتۆن، کیسە، و ئەو ماندووبوونەی پێویستە بۆ ئامادەکردنی کاڵاکە بۆ ناردن.",
+            "Order Verification Cost": "تێچووی تەلەفۆنکردن یان ناردنی نامە بە وەتسئاپ بۆ کڕیار بۆ دڵنیابوونەوە لە داواکارییەکەی پێش ناردنی.",
+            "Order Refusal (RTS) Rate": "ڕێژەی ئەو داواکارییانەی کە کڕیار لە کاتی گەیاندن وەریان ناگرێت و دەگەڕێنەوە. ئەمە گەورەترین هۆکاری زیانە لە کاری ئۆنلایندا.",
+            "Reverse Logistics (RTS) Fee": "ئەو پارەیەی کۆمپانیای گەیاندن لێتی وەردەگرێت بۆ گەڕاندنەوەی ئەو کاڵایەی کە کڕیار وەری نەگرتووە و گەڕاوەتەوە.",
+            "Post-Delivery Return Rate": "ڕێژەی ئەو کڕیارانەی کە دوای وەرگرتنی کاڵاکە پەشیمان دەبنەوە و دەیگەڕێننەوە. ئەگەر تۆ کاڵا وەرناگریتەوە، ئەمە بکوژێنەوە.",
+            "Inventory Shrinkage Rate": "ڕێژەی ئەو کاڵایانەی لە کۆگادا یان لە کاتی گەیاندن ون دەبن یان دەشکێن و تێکدەچن. ئەگەر ئەمە لەسەر تۆ نییە، بکوژێنەوە.",
+            "Inventory Obsolescence Rate": "ڕێژەی ئەو کاڵایانەی مۆدێلیان بەسەردەچێت یان تێکدەچن و نافرۆشرێن. ئەگەر کاڵاکەت بەسەرچوونی نییە، بکوژێنەوە.",
+            "Contribution Margin per Unit": "ئەو قازانجەی کە لە فرۆشتنی یەک کاڵادا دەمێنێتەوە دوای دەرکردنی تێچووی کاڵا، ڕیکلام، و گەیاندن، بەڵام پێش دەرکردنی خەرجییە مانگانەکانی وەک کرێ.",
+            "Fixed Operating Expenses (OPEX)": "خەرجییە جێگیرەکانی مانگانە وەک کرێی شوێن، سیستەم، غاز و بەنزین کە دەبێت بیدەیت بێ گوێدانە ئەوەی چەندت فرۆشتووە.",
+            "Fixed Payroll & Labor Costs": "کۆی گشتی ئەو مووچەیەی کە مانگانە دەیدەیت بە کارمەندە جێگیرەکانت.",
+            "Fully Allocated Net Profit per Unit": "قازانجی ڕاستەقینە و سافی تۆ لە فرۆشتنی هەر داواکارییەکدا، دوای لێدەرکردنی تەواوی خەرجییەکان، زیانەکان، کرێ و مووچە.",
+            "Target Net Income": "ئەو بڕە پارەیەی کە دەتەوێت وەک قازانجی سافی لە کۆتایی مانگدا یان ماوەکەدا بیخەیتە گیرفانتەوە.",
+            "Operational Period": "ئەو ماوەیەی کە دیاریت کردووە بۆ گەیشتن بەم ئامانجە (بە شێوەیەکی گشتی ٣٠ ڕۆژە).",
+            "Cash Conversion Cycle": "ئەو ژمارە ڕۆژەی کە کۆمپانیای گەیاندن پارەکەت لای خۆی دەهێڵێتەوە پێش ئەوەی ڕادەستی تۆی بکاتەوە.",
+            "Unit Sales Break-Even Point": "ئەو ژمارە داواکارییەی کە پێویستە بیفرۆشیت تەنها بۆ ئەوەی خەرجییە مانگانەکانت (کرێ و مووچە) دابین بکەیت بەبێ هیچ قازانج یان زیانێک.",
+            "Required Successful Conversions": "ئەو ژمارە داواکارییە سەرکەوتووانەی کە پێویستە بیفرۆشیت بۆ ئەوەی بگەیت بەو ئامانجەی داتناوە بۆ قازانج.",
+            "Gross Shipped Volume": "کۆی گشتی ئەو داواکارییانەی کە دەبێت بیاننێریت لەگەڵ گەیاندن. ئەم ژمارەیە بەرزترە لە داواکارییە سەرکەوتووەکان چونکە ڕێژەی ئەو داواکارییانەش لەخۆ دەگرێت کە دەگەڕێنەوە.",
+            "Total Capital Deployment": "کۆی گشتی ئەو سەرمایە و پارەیەی کە پێویستە خەرجی بکەیت بۆ کڕینی کاڵا, ڕیکلام کردن، و گەیاندن بۆ گەیشتن بەم ئامانجە.",
+            "Required Working Capital Float": "ئەو پارە نەختینەیەی کە پێویستە بەردەوام لە گیرفانتدا یان بانکتدا هەبێت بۆ بەڕێوەبردنی کارەکانت لەو ماوەیەی کە پارەکەت لای کۆمپانیای گەیاندنە."
+        };
+
+        function openModal(termName) {
+            document.getElementById('modalTitle').innerText = termName;
+            document.getElementById('modalBody').innerText = businessTerms[termName] || "ڕوونکردنەوە نەدۆزرایەوە.";
+            document.getElementById('infoModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('infoModal').classList.remove('active');
+        }
+
+        function toggleFeature(featureName) {
+            const switchElement = document.getElementById('switch-' + featureName);
+            if (!switchElement) return;
+            
+            const isChecked = switchElement.checked;
+            const inputGroup = document.getElementById('group-' + featureName);
+            const inputElement = document.getElementById('inp-' + featureName);
+            
+            if (isChecked) {
+                if (inputGroup) inputGroup.classList.remove('disabled');
+                if (inputElement) inputElement.disabled = false;
+            } else {
+                if (inputGroup) inputGroup.classList.add('disabled');
+                if (inputElement) inputElement.disabled = true;
+            }
+            
+            saveData();
+            calculate();
+        }
+
+        function formatK(num) { return (num / 1000) + 'k'; }
+        function formatMoney(num) { return Math.round(num).toLocaleString('en-US'); }
+
+        function getInputValue(inputId, defaultValue) {
+            const inputElement = document.getElementById(inputId);
+            if (!inputElement) return defaultValue;
+            const parsedValue = parseFloat(inputElement.value);
+            return isNaN(parsedValue) ? defaultValue : parsedValue;
+        }
+
+        function setText(elementId, text) {
+            const element = document.getElementById(elementId);
+            if (element) element.innerText = text;
+        }
+
+        function setColor(elementId, color) {
+            const element = document.getElementById(elementId);
+            if (element) element.style.color = color;
+        }
+
+        function saveData() {
+            try {
+                const inputs = document.querySelectorAll('input');
+                inputs.forEach(input => {
+                    if (input.id && input.type !== 'range') {
+                        if (input.type === 'checkbox') {
+                            localStorage.setItem(input.id, input.checked);
+                        } else {
+                            localStorage.setItem(input.id, input.value);
+                        }
+                    }
+                });
+            } catch (e) {
+                console.warn("localStorage is not available for saving data:", e);
+            }
+        }
+
+        function loadData() {
+            try {
+                const inputs = document.querySelectorAll('input');
+                inputs.forEach(input => {
+                    if (input.id && input.type !== 'range') {
+                        const savedVal = localStorage.getItem(input.id);
+                        if (savedVal !== null) {
+                            if (input.type === 'checkbox') {
+                                input.checked = savedVal === 'true';
+                            } else {
+                                input.value = savedVal;
+                            }
+                        }
+                    }
+                });
+            } catch (e) {
+                console.warn("localStorage is not available for loading data:", e);
+            }
+
+            ['discount', 'ltv', 'refund', 'damage', 'deadstock'].forEach(featureName => {
+                toggleFeature(featureName);
+            });
+        }
+
+        function syncFromSlider() {
+            const metricKeys = ['retail', 'sourcing', 'shipping', 'cac'];
+            metricKeys.forEach(metricKey => {
+                const slider = document.getElementById('slide-' + metricKey);
+                const input = document.getElementById('inp-' + metricKey);
+                const box = document.getElementById('box-' + metricKey);
+                if(slider && input && box) {
+                    input.value = slider.value;
+                    box.innerText = formatK(slider.value);
+                }
+            });
+            calculate();
+        }
+
+        function syncFromInput() {
+            const metricKeys = ['retail', 'sourcing', 'shipping', 'cac'];
+            metricKeys.forEach(metricKey => {
+                const slider = document.getElementById('slide-' + metricKey);
+                const input = document.getElementById('inp-' + metricKey);
+                const box = document.getElementById('box-' + metricKey);
+                if(slider && input && box) {
+                    let val = parseFloat(input.value) || 0;
+                    slider.value = val;
+                    box.innerText = formatK(val);
+                }
+            });
+            calculate();
+        }
+
+        function resetDefaults() {
+            const defaults = {
+                'inp-retail': '35000',
+                'inp-sourcing': '10000',
+                'inp-shipping': '4000',
+                'inp-cac': '5000',
+                'inp-ad-fee': '3',
+                'inp-pack': '500',
+                'inp-telecom': '250',
+                'inp-reject': '20',
+                'inp-return': '5000',
+                'inp-damage': '5',
+                'inp-deadstock': '2',
+                'inp-discount': '0',
+                'inp-ltv': '1.1',
+                'inp-refund': '1',
+                'inp-aov': '1.0',
+                'inp-opex': '150000',
+                'inp-salary': '300000',
+                'inp-remit': '7',
+                'inp-goal': '1000000',
+                'inp-days': '30'
+            };
+            for (const [inputId, val] of Object.entries(defaults)) {
+                const inputElement = document.getElementById(inputId);
+                if (inputElement) inputElement.value = val;
+            }
+            ['switch-discount', 'switch-ltv', 'switch-refund', 'switch-damage', 'switch-deadstock'].forEach(switchId => {
+                const switchElement = document.getElementById(switchId);
+                if (switchElement) switchElement.checked = true;
+            });
+            try {
+                localStorage.clear();
+            } catch (e) {
+                console.warn("localStorage is not available for clearing:", e);
+            }
+            ['discount', 'ltv', 'refund', 'damage', 'deadstock'].forEach(featureName => {
+                toggleFeature(featureName);
+            });
+            syncFromInput();
+        }
+
+        function evaluateMetrics(metrics) {
+            function setStatus(elementId, status) {
+                const statusElement = document.getElementById(elementId);
+                if(statusElement) {
+                    statusElement.classList.remove('metric-good', 'metric-avg', 'metric-bad');
+                    statusElement.classList.add('metric-' + status);
+                }
+            }
+
+            // Fallback divisors to prevent breaking on 0
+            let safeRetail = metrics.retail > 0 ? metrics.retail : 1;
+            let safeGoal = metrics.goal > 0 ? metrics.goal : 1;
+
+            let cogsPct = (metrics.sourcing / safeRetail) * 100;
+            setStatus('inp-sourcing', cogsPct < 30 ? 'good' : (cogsPct <= 40 ? 'avg' : 'bad'));
+            
+            let gmPct = 100 - cogsPct;
+            setStatus('inp-retail', gmPct >= 60 ? 'good' : (gmPct >= 40 ? 'avg' : 'bad'));
+
+            let shipPct = (metrics.shipping / safeRetail) * 100;
+            setStatus('inp-shipping', shipPct < 10 ? 'good' : (shipPct <= 15 ? 'avg' : 'bad'));
+
+            let cacPct = (metrics.cac / safeRetail) * 100;
+            setStatus('inp-cac', cacPct < 15 ? 'good' : (cacPct <= 30 ? 'avg' : 'bad'));
+
+            setStatus('inp-ad-fee', metrics.adFee < 2.5 ? 'good' : (metrics.adFee <= 4 ? 'avg' : 'bad'));
+
+            let packPct = (metrics.pack / safeRetail) * 100;
+            setStatus('inp-pack', packPct < 2 ? 'good' : (packPct <= 5 ? 'avg' : 'bad'));
+
+            let telPct = (metrics.telecom / safeRetail) * 100;
+            setStatus('inp-telecom', telPct < 1 ? 'good' : (telPct <= 2 ? 'avg' : 'bad'));
+
+            setStatus('inp-reject', metrics.reject < 20 ? 'good' : (metrics.reject <= 30 ? 'avg' : 'bad'));
+            
+            setStatus('inp-return', metrics.returnFee <= metrics.shipping ? 'good' : (metrics.returnFee <= metrics.shipping * 1.5 ? 'avg' : 'bad'));
+            
+            setStatus('inp-damage', metrics.damage < 2 ? 'good' : (metrics.damage <= 5 ? 'avg' : 'bad'));
+            
+            setStatus('inp-deadstock', metrics.deadstock < 5 ? 'good' : (metrics.deadstock <= 10 ? 'avg' : 'bad'));
+            
+            setStatus('inp-discount', metrics.discount <= 5 ? 'good' : (metrics.discount <= 15 ? 'avg' : 'bad'));
+            
+            setStatus('inp-ltv', metrics.ltv > 1.5 ? 'good' : (metrics.ltv >= 1.1 ? 'avg' : 'bad'));
+            
+            setStatus('inp-refund', metrics.refund < 5 ? 'good' : (metrics.refund <= 15 ? 'avg' : 'bad'));
+            
+            setStatus('inp-aov', metrics.aov >= 1.5 ? 'good' : (metrics.aov > 1.0 ? 'avg' : 'bad'));
+            
+            setStatus('inp-remit', metrics.remit <= 3 ? 'good' : (metrics.remit <= 7 ? 'avg' : 'bad'));
+
+            let opexPct = (metrics.opex / safeGoal) * 100;
+            setStatus('inp-opex', opexPct < 15 ? 'good' : (opexPct <= 30 ? 'avg' : 'bad'));
+
+            let salPct = (metrics.salary / safeGoal) * 100;
+            setStatus('inp-salary', salPct < 15 ? 'good' : (salPct <= 30 ? 'avg' : 'bad'));
+
+            setStatus('inp-goal', metrics.goal >= 2000000 ? 'good' : (metrics.goal >= 500000 ? 'avg' : 'bad'));
+            
+            setStatus('inp-days', metrics.days < 30 ? 'good' : (metrics.days <= 60 ? 'avg' : 'bad'));
+        }
+
+        function readInputs() {
+            let retail = getInputValue('inp-retail', 0);
+            let sourcing = getInputValue('inp-sourcing', 0);
+            let shipping = getInputValue('inp-shipping', 0);
+            let cac = getInputValue('inp-cac', 0);
+            let adFee = getInputValue('inp-ad-fee', 0);
+            let pack = getInputValue('inp-pack', 0);
+            let telecom = getInputValue('inp-telecom', 0);
+            
+            let reject = getInputValue('inp-reject', 0);
+            let returnFee = getInputValue('inp-return', 0);
+            
+            const discountOn = document.getElementById('switch-discount') ? document.getElementById('switch-discount').checked : true;
+            let discount = discountOn ? getInputValue('inp-discount', 0) : 0;
+
+            const ltvOn = document.getElementById('switch-ltv') ? document.getElementById('switch-ltv').checked : true;
+            let ltv = ltvOn ? getInputValue('inp-ltv', 1) : 1;
+
+            const refundOn = document.getElementById('switch-refund') ? document.getElementById('switch-refund').checked : true;
+            let refund = refundOn ? getInputValue('inp-refund', 0) : 0;
+
+            const damageOn = document.getElementById('switch-damage') ? document.getElementById('switch-damage').checked : true;
+            let damage = damageOn ? getInputValue('inp-damage', 0) : 0;
+
+            const deadstockOn = document.getElementById('switch-deadstock') ? document.getElementById('switch-deadstock').checked : true;
+            let deadstock = deadstockOn ? getInputValue('inp-deadstock', 0) : 0;
+
+            let aov = getInputValue('inp-aov', 1); 
+            let opex = getInputValue('inp-opex', 0);
+            let salary = getInputValue('inp-salary', 0);
+            let remit = getInputValue('inp-remit', 0);
+            let goal = getInputValue('inp-goal', 0);
+            let days = getInputValue('inp-days', 1);
+
+            if (days <= 0) days = 1;
+            if (ltv < 1) ltv = 1; 
+            if (deadstock >= 100) deadstock = 99; 
+            if ((reject + refund) >= 100) { reject = 99 - refund; }
+
+            return {
+                retail, sourcing, shipping, cac, adFee, pack, telecom,
+                reject, returnFee, damage, deadstock,
+                discount, ltv, refund,
+                aov, opex, salary, remit, goal, days
+            };
+        }
+
+        function runFinancialModel(metrics) {
+            let totalFixedCosts = metrics.opex + metrics.salary;
+            
+            let effectiveRetail = metrics.retail * (1 - (metrics.discount / 100));
+            let totalCacCost = metrics.cac * (1 + (metrics.adFee / 100)); 
+            let effectiveCac = totalCacCost / metrics.ltv; 
+
+            let retailPerOrder = effectiveRetail * metrics.aov;
+            let sourcingPerOrder = metrics.sourcing * metrics.aov;
+
+            let deadStockMarginLoss = sourcingPerOrder * (metrics.deadstock / (100 - metrics.deadstock));
+
+            let rejectDecimal = metrics.reject / 100;
+            let refundDecimal = metrics.refund / 100;
+            let successDecimal = 1 - rejectDecimal - refundDecimal;
+            if (successDecimal <= 0) successDecimal = 0.01;
+
+            let profitIfSuccess = retailPerOrder - sourcingPerOrder - metrics.shipping - effectiveCac - metrics.pack - metrics.telecom - deadStockMarginLoss;
+            let lossIfReject = metrics.shipping + effectiveCac + metrics.pack + metrics.telecom + metrics.returnFee + (sourcingPerOrder * (metrics.damage / 100)) + deadStockMarginLoss;
+            let lossIfRefund = metrics.shipping + effectiveCac + metrics.pack + metrics.telecom + metrics.returnFee + (sourcingPerOrder * (metrics.damage / 100)) + deadStockMarginLoss;
+
+            let expectedProfitPerOrder = (successDecimal * profitIfSuccess) - (rejectDecimal * lossIfReject) - (refundDecimal * lossIfRefund);
+            let netProfit = expectedProfitPerOrder / successDecimal; 
+            
+            let totalUnits = 0;
+            let totalSent = 0;
+            let dailySales = 0;
+            let breakEven = 0;
+            let totalCapital = 0;
+            let floatCapital = 0;
+            let trueNetProfitPerOrder = 0;
+            
+            let effectiveGoal = metrics.goal + totalFixedCosts; 
+
+            if (netProfit > 0) {
+                breakEven = Math.ceil(totalFixedCosts / netProfit);
+                totalUnits = Math.ceil(effectiveGoal / netProfit);
+                totalSent = Math.ceil(totalUnits / successDecimal);
+                dailySales = (totalUnits / metrics.days).toFixed(1);
+                
+                let upfrontCostPerOrder = sourcingPerOrder + metrics.shipping + effectiveCac + metrics.pack + metrics.telecom + deadStockMarginLoss;
+                totalCapital = totalSent * upfrontCostPerOrder;
+                
+                let dailySentOrders = totalSent / metrics.days;
+                floatCapital = dailySentOrders * upfrontCostPerOrder * metrics.remit;
+
+                trueNetProfitPerOrder = netProfit - (totalFixedCosts / totalUnits);
+            }
+
+            return {
+                netProfit,
+                breakEven,
+                totalUnits,
+                totalSent,
+                dailySales,
+                totalCapital,
+                floatCapital,
+                trueNetProfitPerOrder
+            };
+        }
+
+        function updateUI(projections, metrics) {
+            setText('txt-net-profit', formatMoney(projections.netProfit) + ' دینار');
+            setText('txt-true-net', formatMoney(projections.trueNetProfitPerOrder) + ' دینار');
+            setText('sum-net', formatMoney(projections.trueNetProfitPerOrder) + ' دینار');
+            
+            const profitElement = document.getElementById('txt-net-profit');
+            if (profitElement) {
+                profitElement.classList.remove('profit-pulse');
+                void profitElement.offsetWidth; // trigger reflow
+                profitElement.classList.add('profit-pulse');
+            }
+
+            const statusElement = document.getElementById('txt-status');
+
+            if (projections.netProfit <= 0 || projections.trueNetProfitPerOrder <= 0) {
+                setColor('txt-net-profit', 'var(--danger)');
+                setColor('txt-true-net', 'var(--danger)');
+                setText('txt-true-net', 'زیان');
+                setText('txt-breakeven', 'زیان');
+                setText('txt-total-units', 'زیان');
+                setText('txt-orders-sent', 'زیان');
+                setText('txt-daily-sales', 'زیان');
+                setText('txt-capital', 'زیان');
+                setText('txt-float', 'زیان');
+                setText('sum-units', 'زیان');
+                setText('sum-daily', 'زیان');
+                setColor('sum-net', 'var(--danger)');
+                
+                if (statusElement) {
+                    statusElement.innerText = "❌ یەکەیەکی زیانبەخشە";
+                    statusElement.className = "status-warning";
+                }
+            } else {
+                setColor('txt-net-profit', 'var(--accent)');
+                setColor('txt-true-net', 'var(--accent)');
+                setColor('sum-net', 'var(--accent)');
+                setText('txt-breakeven', formatMoney(projections.breakEven) + ' داواکاری');
+                setText('txt-total-units', formatMoney(projections.totalUnits));
+                setText('txt-orders-sent', formatMoney(projections.totalSent));
+                setText('txt-daily-sales', projections.dailySales);
+                setText('txt-capital', formatMoney(projections.totalCapital) + ' دینار');
+                setText('txt-float', formatMoney(projections.floatCapital) + ' دینار');
+                setText('sum-units', formatMoney(projections.totalUnits));
+                setText('sum-daily', projections.dailySales);
+                
+                if (statusElement) {
+                    statusElement.innerText = "✅ ئامانجی تەندروست";
+                    statusElement.className = "status-healthy";
+                }
+            }
+
+            evaluateMetrics(metrics);
+        }
+
+        function calculate() {
+            try {
+                const metrics = readInputs();
+                const calculatedProjections = runFinancialModel(metrics);
+                updateUI(calculatedProjections, metrics);
+                saveData();
+            } catch (error) {
+                console.error("Calculator Error:", error);
+            }
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const btn = document.getElementById('theme-toggle');
+            const currentTheme = html.getAttribute('data-theme');
+            let nextTheme = 'dark';
+            if (currentTheme === 'light') {
+                html.removeAttribute('data-theme');
+                btn.textContent = '🌙';
+                try {
+                    localStorage.setItem('app-theme', 'dark');
+                } catch (e) {
+                    console.warn(e);
+                }
+                document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0a0a0f');
+                nextTheme = 'dark';
+            } else {
+                html.setAttribute('data-theme', 'light');
+                btn.textContent = '☀️';
+                try {
+                    localStorage.setItem('app-theme', 'light');
+                } catch (e) {
+                    console.warn(e);
+                }
+                document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f5f5f7');
+                nextTheme = 'light';
+            }
+            if (window.Android && window.Android.updateTheme) {
+                window.Android.updateTheme(nextTheme);
+            }
+        }
+
+        window.onload = function() {
+            let savedTheme = null;
+            try {
+                savedTheme = localStorage.getItem('app-theme');
+            } catch (e) {
+                console.warn(e);
+            }
+            let activeTheme = 'dark';
+            if (savedTheme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.getElementById('theme-toggle').textContent = '☀️';
+                document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f5f5f7');
+                activeTheme = 'light';
+            }
+            if (window.Android && window.Android.updateTheme) {
+                window.Android.updateTheme(activeTheme);
+            }
+            loadData();
+            syncFromInput();
+        };
+    </script>
+</body>
+</html>
