@@ -21,6 +21,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -50,6 +51,7 @@ kotlin {
 dependencies {
   // Core Android dependencies
   implementation(libs.androidx.core.ktx)
+  implementation(libs.androidx.security.crypto)
   implementation(libs.androidx.activity.compose)
 
   // Jetpack Compose dependencies
@@ -57,7 +59,8 @@ dependencies {
   implementation(libs.androidx.compose.ui)
   implementation(libs.androidx.compose.ui.tooling.preview)
   implementation(libs.androidx.compose.material3)
-  implementation("androidx.compose.material:material-icons-core")
+  implementation(libs.androidx.compose.material.icons.core)
+  implementation(libs.androidx.compose.material.icons.extended)
   implementation(libs.material)
   implementation(libs.androidx.lifecycle.runtime.compose)
   implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -65,6 +68,10 @@ dependencies {
 
   // Splash Screen compat (supports API 23+)
   implementation(libs.androidx.core.splashscreen)
+
+  // Room SQLite Database dependencies
+  implementation(libs.androidx.room.runtime)
+  implementation(libs.androidx.room.ktx)
 
   // Testing dependencies
   testImplementation(libs.junit)

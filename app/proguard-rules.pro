@@ -4,3 +4,6 @@
 }
 # Keep WebViewAssetLoader
 -keep class androidx.webkit.** { *; }
+
+# Suppress R8 missing class warning for GuardedBy in Tink / other libraries
+-dontwarn javax.annotation.concurrent.GuardedBy

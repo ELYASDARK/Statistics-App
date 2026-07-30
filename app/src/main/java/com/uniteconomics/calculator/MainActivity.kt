@@ -6,11 +6,6 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 
@@ -28,13 +23,8 @@ class MainActivity : ComponentActivity() {
         setupBackPressedCallback()
 
         setContent {
-            val systemDark = isSystemInDarkTheme()
-            var darkTheme by remember(systemDark) { mutableStateOf(systemDark) }
-            AppTheme(darkTheme = darkTheme) {
-                CalculatorScreen(
-                    darkTheme = darkTheme,
-                    onThemeToggle = { darkTheme = !darkTheme }
-                )
+            AppTheme {
+                CalculatorApp()
             }
         }
     }
