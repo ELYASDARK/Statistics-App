@@ -142,7 +142,7 @@ private fun NavItem(
             .padding(vertical = 4.dp, horizontal = 4.dp)
             .then(
                 if (isSelected) {
-                    Modifier.neuPressed(
+                    Modifier.neuConvex(
                         lightShadowColor = neuColors.shadowLight,
                         darkShadowColor = neuColors.shadowDark,
                         backgroundColor = neuColors.surface,

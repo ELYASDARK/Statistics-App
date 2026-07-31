@@ -132,58 +132,60 @@ fun SliderInputRow(
 
             Spacer(modifier = Modifier.width(10.dp))
 
-            // Numeric Input Box with Bi-directional synchronization (NeuPressed container to prevent bottom clipping)
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .widthIn(min = 90.dp, max = 120.dp)
-                        .height(44.dp)
-                        .neuPressed(
-                            lightShadowColor = neuColors.shadowLight,
-                            darkShadowColor = neuColors.shadowDark,
-                            backgroundColor = neuColors.surface,
-                            cornerRadius = 10.dp,
-                            elevation = 2.dp
-                        )
-                        .padding(horizontal = 8.dp),
-                    contentAlignment = Alignment.Center
+            // Numeric Input Box with Bi-directional synchronization (Always LTR flow for numbers + units)
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    androidx.compose.foundation.text.BasicTextField(
-                        value = textInputState,
-                        onValueChange = { input ->
-                            textInputState = input
-                            val cleaned = input.replace(",", "")
-                            val parsed = cleaned.toDoubleOrNull()
-                            if (parsed != null) {
-                                val clamped = parsed.coerceIn(
-                                    valueRange.start.toDouble(),
-                                    valueRange.endInclusive.toDouble()
-                                )
-                                onValueChange(clamped)
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        textStyle = LocalTextStyle.current.copy(
-                            textAlign = TextAlign.Center,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = neuColors.textMain
-                        ),
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        cursorBrush = androidx.compose.ui.graphics.SolidColor(neuColors.primary)
+                    Box(
+                        modifier = Modifier
+                            .widthIn(min = 90.dp, max = 120.dp)
+                            .height(44.dp)
+                            .neuPressed(
+                                lightShadowColor = neuColors.shadowLight,
+                                darkShadowColor = neuColors.shadowDark,
+                                backgroundColor = neuColors.surface,
+                                cornerRadius = 10.dp,
+                                elevation = 2.dp
+                            )
+                            .padding(horizontal = 8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        androidx.compose.foundation.text.BasicTextField(
+                            value = textInputState,
+                            onValueChange = { input ->
+                                textInputState = input
+                                val cleaned = input.replace(",", "")
+                                val parsed = cleaned.toDoubleOrNull()
+                                if (parsed != null) {
+                                    val clamped = parsed.coerceIn(
+                                        valueRange.start.toDouble(),
+                                        valueRange.endInclusive.toDouble()
+                                    )
+                                    onValueChange(clamped)
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            textStyle = LocalTextStyle.current.copy(
+                                textAlign = TextAlign.Center,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = neuColors.textMain
+                            ),
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            cursorBrush = androidx.compose.ui.graphics.SolidColor(neuColors.primary)
+                        )
+                    }
+
+                    Text(
+                        text = unit,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = neuColors.textMuted
                     )
                 }
-
-                Text(
-                    text = unit,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = neuColors.textMuted
-                )
             }
         }
 
@@ -207,21 +209,21 @@ fun SliderInputRow(
             thumb = {
                 Box(
                     modifier = Modifier
-                        .size(20.dp)
+                        .size(22.dp)
                         .neuConvex(
                             lightShadowColor = neuColors.shadowLight,
                             darkShadowColor = neuColors.shadowDark,
                             backgroundColor = neuColors.surface,
                             lightGradientColor = neuColors.shadowLight.copy(alpha = 0.6f),
                             darkGradientColor = neuColors.shadowDark.copy(alpha = 0.3f),
-                            cornerRadius = 10.dp,
+                            cornerRadius = 11.dp,
                             elevation = 2.dp
                         ),
                     contentAlignment = Alignment.Center
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(6.dp)
+                            .size(7.dp)
                             .clip(CircleShape)
                             .background(neuColors.primary)
                     ) {
@@ -246,9 +248,10 @@ fun SliderInputRow(
                     val height = size.height
                     val activeWidth = width * fraction
 
-                    // Inactive track: neuColors.border
+                    // Inactive track with enhanced dark theme contrast
+                    val inactiveColor = if (neuColors.isDark) Color(0xFF2C3440) else neuColors.border
                     drawRoundRect(
-                        color = neuColors.border,
+                        color = inactiveColor,
                         size = size,
                         cornerRadius = androidx.compose.ui.geometry.CornerRadius(height / 2f, height / 2f)
                     )

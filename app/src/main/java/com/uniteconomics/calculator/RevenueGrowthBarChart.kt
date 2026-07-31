@@ -94,7 +94,7 @@ fun RevenueGrowthBarChart(
 
     val displayBarLabels = remember(isKurdish) {
         if (isKurdish) {
-            listOf("مانگی ١", "مانگی ٢", "مانگی ٣", "مانگی ٤", "مانگی ٥")
+            listOf("م١", "م٢", "م٣", "م٤", "م٥")
         } else {
             listOf("M1", "M2", "M3", "M4", "M5")
         }

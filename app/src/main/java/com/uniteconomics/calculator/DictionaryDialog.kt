@@ -1,7 +1,11 @@
 package com.uniteconomics.calculator
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,17 +18,39 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import java.util.Locale
+
+/**
+ * Normalizes Kurdish (Sorani/Kurmanji) & Arabic/Persian character variations
+ * so search works seamlessly regardless of keyboard variant.
+ */
+private fun normalizeKurdishSearch(input: String): String {
+    return input.lowercase(Locale.ROOT)
+        .replace('ي', 'ی')
+        .replace('ى', 'ی')
+        .replace('ێ', 'ی')
+        .replace('ك', 'ک')
+        .replace('ۆ', 'و')
+        .replace('ڕ', 'ر')
+        .replace('ڵ', 'ل')
+        .replace('ە', 'ه')
+        .trim()
+}
 
 /**
  * Kurdish Sorani & English bilingual interactive dictionary dialog modal.
  * Displays definitions and e-commerce financial explanations for all calculator terms.
+ * Features instant live auto-suggest hover dropdown, bilingual Kurdish/English cross-matching,
+ * and 1-tap clear query support.
  */
 @Composable
 fun DictionaryDialog(
@@ -34,21 +60,40 @@ fun DictionaryDialog(
 ) {
     val neuColors = LocalNeumorphicColors.current
     var searchQuery by remember { mutableStateOf("") }
-    
+    var isSearchFocused by remember { mutableStateOf(false) }
+
     val activeDict = if (isKurdish) KurdishTerms.dictionary else EnglishTerms.dictionary
+    val altDict = if (isKurdish) EnglishTerms.dictionary else KurdishTerms.dictionary
     val activeGetDesc: (String) -> String = if (isKurdish) { { KurdishTerms.getDescription(it) } } else { { EnglishTerms.getDescription(it) } }
 
     var selectedTerm by remember(isKurdish) {
         mutableStateOf(initialTerm ?: activeDict.keys.firstOrNull() ?: "")
     }
 
-    val allTerms = remember(isKurdish) { activeDict.keys.toList() }
-    val filteredTerms = remember(searchQuery, allTerms) {
+    val allTermsList = remember(isKurdish) { activeDict.keys.toList() }
+    val altTermsList = remember(isKurdish) { altDict.keys.toList() }
+
+    // Instant bilingual search filtering with Kurdish character normalization
+    val filteredTerms = remember(searchQuery, isKurdish, allTermsList) {
         if (searchQuery.isBlank()) {
-            allTerms
+            allTermsList
         } else {
-            allTerms.filter { it.contains(searchQuery, ignoreCase = true) }
+            val normQuery = normalizeKurdishSearch(searchQuery)
+            allTermsList.filterIndexed { index, term ->
+                val normTerm = normalizeKurdishSearch(term)
+                val normAltTerm = if (index < altTermsList.size) normalizeKurdishSearch(altTermsList[index]) else ""
+                val desc = normalizeKurdishSearch(activeGetDesc(term))
+
+                normTerm.contains(normQuery) ||
+                normAltTerm.contains(normQuery) ||
+                desc.contains(normQuery)
+            }
         }
+    }
+
+    // Live Auto-Suggest Suggestions (Top 4 matching results as user types 1 or 2 characters)
+    val autoSuggestList = remember(searchQuery, filteredTerms) {
+        if (searchQuery.isBlank()) emptyList() else filteredTerms.take(4)
     }
 
     val currentDescription = remember(selectedTerm, isKurdish) {
@@ -65,7 +110,7 @@ fun DictionaryDialog(
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.92f)
-                    .fillMaxHeight(0.85f)
+                    .fillMaxHeight(0.88f)
                     .neuFlat(
                         lightShadowColor = neuColors.shadowLight,
                         darkShadowColor = neuColors.shadowDark,
@@ -95,8 +140,8 @@ fun DictionaryDialog(
                                         lightShadowColor = neuColors.shadowLight,
                                         darkShadowColor = neuColors.shadowDark,
                                         backgroundColor = neuColors.surface,
-                                        lightGradientColor = neuColors.primary.copy(alpha = 0.2f),
-                                        darkGradientColor = neuColors.primary.copy(alpha = 0.05f),
+                                        lightGradientColor = neuColors.shadowLight.copy(alpha = 0.6f),
+                                        darkGradientColor = neuColors.shadowDark.copy(alpha = 0.3f),
                                         cornerRadius = 12.dp,
                                         elevation = 3.dp
                                     ),
@@ -105,7 +150,7 @@ fun DictionaryDialog(
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Outlined.MenuBook,
                                     contentDescription = "Dictionary",
-                                    tint = neuColors.primary,
+                                    tint = neuColors.textMuted,
                                     modifier = Modifier.size(20.dp)
                                 )
                             }
@@ -139,7 +184,10 @@ fun DictionaryDialog(
                                     cornerRadius = 18.dp,
                                     elevation = 2.dp
                                 )
-                                .clickable { onDismiss() },
+                                .clickable(
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() }
+                                ) { onDismiss() },
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
@@ -153,35 +201,125 @@ fun DictionaryDialog(
 
                     Spacer(modifier = Modifier.height(14.dp))
 
-                    // Search Filter Box (Search icon mirrors position in RTL)
-                    OutlinedTextField(
-                        value = searchQuery,
-                        onValueChange = { searchQuery = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        placeholder = {
-                            Text(
-                                text = if (isKurdish) "گەڕان لە فەرهەنگدا..." else "Search term...",
-                                fontSize = 13.sp,
-                                color = neuColors.textMuted
-                            )
-                        },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = "Search",
-                                tint = neuColors.textMuted,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        },
-                        singleLine = true,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = neuColors.primary,
-                            unfocusedBorderColor = neuColors.border,
-                            focusedContainerColor = neuColors.surface,
-                            unfocusedContainerColor = neuColors.surface
-                        ),
-                        shape = RoundedCornerShape(16.dp)
-                    )
+                    // Search Filter Box with Trailing Clear Button & Instant Suggestion Dropdown Container
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        OutlinedTextField(
+                            value = searchQuery,
+                            onValueChange = { searchQuery = it },
+                            modifier = Modifier.fillMaxWidth(),
+                            placeholder = {
+                                Text(
+                                    text = if (isKurdish) "گەڕان لە فەرهەنگدا..." else "Search term...",
+                                    fontSize = 13.sp,
+                                    color = neuColors.textMuted
+                                )
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Search,
+                                    contentDescription = "Search",
+                                    tint = neuColors.primary,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            },
+                            trailingIcon = {
+                                if (searchQuery.isNotEmpty()) {
+                                    Icon(
+                                        imageVector = Icons.Default.Close,
+                                        contentDescription = "Clear Search",
+                                        tint = neuColors.textMuted,
+                                        modifier = Modifier
+                                            .size(18.dp)
+                                            .clickable(
+                                                indication = null,
+                                                interactionSource = remember { MutableInteractionSource() }
+                                            ) { searchQuery = "" }
+                                    )
+                                }
+                            },
+                            singleLine = true,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = neuColors.primary,
+                                unfocusedBorderColor = neuColors.border,
+                                focusedContainerColor = neuColors.surface,
+                                unfocusedContainerColor = neuColors.surface
+                            ),
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                    }
+
+                    // Live Auto-Suggest Floating Dropdown Panel (Appears as user types 1 or 2 characters)
+                    AnimatedVisibility(
+                        visible = autoSuggestList.isNotEmpty(),
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    ) {
+                        Column(modifier = Modifier.padding(top = 6.dp)) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .neuFlat(
+                                        lightShadowColor = neuColors.shadowLight,
+                                        darkShadowColor = neuColors.shadowDark,
+                                        backgroundColor = neuColors.surface,
+                                        cornerRadius = 16.dp,
+                                        elevation = 6.dp
+                                    )
+                                    .padding(8.dp)
+                            ) {
+                                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    Text(
+                                        text = if (isKurdish) "ئەنجامە پێشنیارکراوەکان:" else "Suggested Results:",
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = neuColors.primary,
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                                    )
+                                    autoSuggestList.forEach { suggestTerm ->
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clip(RoundedCornerShape(10.dp))
+                                                .background(
+                                                    if (suggestTerm == selectedTerm) neuColors.primary.copy(alpha = 0.1f)
+                                                    else neuColors.surface
+                                                )
+                                                .clickable(
+                                                    indication = null,
+                                                    interactionSource = remember { MutableInteractionSource() }
+                                                ) {
+                                                    selectedTerm = suggestTerm
+                                                    searchQuery = suggestTerm
+                                                }
+                                                .padding(horizontal = 10.dp, vertical = 8.dp)
+                                        ) {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Text(
+                                                    text = suggestTerm,
+                                                    fontSize = 13.sp,
+                                                    fontWeight = FontWeight.SemiBold,
+                                                    color = neuColors.textMain,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis,
+                                                    modifier = Modifier.weight(1f)
+                                                )
+                                                Text(
+                                                    text = if (isKurdish) "دیاریکردن" else "Select",
+                                                    fontSize = 11.sp,
+                                                    fontWeight = FontWeight.Medium,
+                                                    color = neuColors.primary
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
 
                     Spacer(modifier = Modifier.height(14.dp))
 
@@ -258,7 +396,10 @@ fun DictionaryDialog(
                                             )
                                         }
                                     )
-                                    .clickable { selectedTerm = term }
+                                    .clickable(
+                                        indication = null,
+                                        interactionSource = remember { MutableInteractionSource() }
+                                    ) { selectedTerm = term }
                                     .padding(horizontal = 14.dp, vertical = 10.dp)
                             ) {
                                 Text(

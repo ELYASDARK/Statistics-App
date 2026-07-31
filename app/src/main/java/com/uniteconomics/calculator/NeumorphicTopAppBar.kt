@@ -1,6 +1,7 @@
 package com.uniteconomics.calculator
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -105,6 +106,7 @@ fun NeumorphicTopAppBar(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+
                 // Dark / Light Mode Theme Switcher Button
                 Box(
                     modifier = Modifier
@@ -116,7 +118,10 @@ fun NeumorphicTopAppBar(
                             cornerRadius = 18.dp,
                             elevation = 3.dp
                         )
-                        .clickable { onThemeToggle() },
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) { onThemeToggle() },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -127,30 +132,21 @@ fun NeumorphicTopAppBar(
                     )
                 }
 
-                // Kurdish Sorani / English Language Toggle Button
+                // Kurdish Sorani / English Language Toggle Button (Identical Convex Pill Style for both languages)
                 Box(
                     modifier = Modifier
                         .height(36.dp)
-                        .then(
-                            if (isKurdish) {
-                                Modifier.neuPressed(
-                                    lightShadowColor = neuColors.shadowLight,
-                                    darkShadowColor = neuColors.shadowDark,
-                                    backgroundColor = neuColors.surface,
-                                    cornerRadius = 18.dp,
-                                    elevation = 2.dp
-                                )
-                            } else {
-                                Modifier.neuFlat(
-                                    lightShadowColor = neuColors.shadowLight,
-                                    darkShadowColor = neuColors.shadowDark,
-                                    backgroundColor = neuColors.surface,
-                                    cornerRadius = 18.dp,
-                                    elevation = 3.dp
-                                )
-                            }
+                        .neuConvex(
+                            lightShadowColor = neuColors.shadowLight,
+                            darkShadowColor = neuColors.shadowDark,
+                            backgroundColor = neuColors.surface,
+                            cornerRadius = 18.dp,
+                            elevation = 3.dp
                         )
-                        .clickable { onLanguageToggle(!isKurdish) }
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) { onLanguageToggle(!isKurdish) }
                         .padding(horizontal = 10.dp, vertical = 6.dp),
                     contentAlignment = Alignment.Center
                 ) {
@@ -186,7 +182,10 @@ fun NeumorphicTopAppBar(
                             cornerRadius = 18.dp,
                             elevation = 3.dp
                         )
-                        .clickable { onOpenDictionary() }
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) { onOpenDictionary() }
                         .padding(horizontal = 10.dp, vertical = 6.dp),
                     contentAlignment = Alignment.Center
                 ) {

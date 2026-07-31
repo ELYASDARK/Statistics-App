@@ -269,7 +269,7 @@ fun CalculatorApp() {
                 FloatingBottomNavBar(
                     currentScreen = currentScreen,
                     onScreenSelected = { nav -> currentScreen = nav },
-                    onOpenSaveModal = { currentScreen = NavScreen.PROJECTS },
+                    onOpenSaveModal = { isSaveProjectModalOpen = true },
                     isKurdish = isKurdish
                 )
             },

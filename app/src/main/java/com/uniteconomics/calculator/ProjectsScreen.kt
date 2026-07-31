@@ -136,6 +136,7 @@ fun ProjectsScreen(
                         )
                         Text(
                             text = if (isKurdish) "کۆی گشتی: ${projects.size} بەرهەمی تۆمارکراو"
+                                   else if (projects.size == 1) "Total: 1 saved product"
                                    else "Total: ${projects.size} saved products",
                             fontSize = 12.sp,
                             color = neuColors.textMuted
