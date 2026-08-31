@@ -143,4 +143,25 @@ class ChartMathTest {
         assertFalse(growth.isInfinite())
         assertFalse(growth.isNaN())
     }
+
+    // --- Multi-Timeframe (Daily, Weekly, Monthly) Dataset Tests ---
+    @Test
+    fun multiTimeframe_dailyWeeklyMonthlyPoints_profitAndLoss() {
+        val profitResult = CalculatorLogic.runFinancialModel(CalculatorInputs())
+        assertFalse(profitResult.isLoss)
+
+        // Profit - Daily has 7 points
+        val dailyRev = profitResult.revenue / 30.0
+        val dailyProfit = profitResult.netProfitTotal / 30.0
+        assertTrue(dailyRev > 0)
+        assertTrue(dailyProfit > 0)
+
+        // Loss - Weekly has 4 points
+        val lossResult = CalculatorLogic.runFinancialModel(CalculatorInputs(cac = 50000.0))
+        assertTrue(lossResult.isLoss)
+        val weeklyBurn = lossResult.burnRateWeek
+        assertEquals(105000.0, weeklyBurn, 0.01)
+        val dailyBurn = lossResult.dailyCashBurn
+        assertEquals(15000.0, dailyBurn, 0.01)
+    }
 }

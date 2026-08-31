@@ -15,6 +15,8 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.ui.composed
 import androidx.compose.ui.unit.dp
 
 /**
@@ -27,19 +29,27 @@ import androidx.compose.ui.unit.dp
  * Dark Light Shadow: #242B35 (alpha 0.5)
  */
 val NeuColorLightSurface = Color(0xFFE0E5EC)
-val NeuColorLightDarkShadow = Color(0xFFA3B1C6).copy(alpha = 0.45f)
-val NeuColorLightLightShadow = Color(0xFFFFFFFF).copy(alpha = 0.35f)
+val NeuColorLightDarkShadow = Color(0xFFA3B1C6).copy(alpha = 0.50f)
+val NeuColorLightLightShadow = Color(0xFFFFFFFF).copy(alpha = 0.85f)
+val NeuColorLightGradLight = Color(0xFFF5F8FC)
+val NeuColorLightGradDark = Color(0xFFCAD1DC)
 
 val NeuColorDarkSurface = Color(0xFF171C21)
 val NeuColorDarkSurfaceCard = Color(0xFF1E232B)
-val NeuColorDarkDarkShadow = Color(0xFF0C0F13).copy(alpha = 0.8f)
-val NeuColorDarkLightShadow = Color(0xFF242B35).copy(alpha = 0.5f)
+val NeuColorDarkDarkShadow = Color(0xFF0C0F13).copy(alpha = 0.85f)
+val NeuColorDarkLightShadow = Color.Transparent
+val NeuColorDarkGradLight = Color(0xFF1E232B)
+val NeuColorDarkGradDark = Color(0xFF1E232B)
 
 /**
  * Helper to convert Shape to corner radius float in pixels.
  */
-fun Shape.toCornerRadiusPx(size: Size, density: Density): Float {
-    val outline = this.createOutline(size, LayoutDirection.Ltr, density)
+fun Shape.toCornerRadiusPx(
+    size: Size,
+    density: Density,
+    layoutDirection: LayoutDirection = LayoutDirection.Ltr
+): Float {
+    val outline = this.createOutline(size, layoutDirection, density)
     return when (outline) {
         is Outline.Rounded -> outline.roundRect.topLeftCornerRadius.x
         is Outline.Rectangle -> 0f
@@ -52,39 +62,46 @@ fun Shape.toCornerRadiusPx(size: Size, density: Density): Float {
  */
 fun Modifier.neuFlat(
     cornerShape: Shape,
-    isDark: Boolean = false,
+    isDark: Boolean? = null,
     elevation: Dp = 6.dp,
     blurRadius: Dp = 10.dp
-): Modifier = this.neuFlat(
-    lightShadowColor = if (isDark) NeuColorDarkLightShadow else NeuColorLightLightShadow,
-    darkShadowColor = if (isDark) NeuColorDarkDarkShadow else NeuColorLightDarkShadow,
-    backgroundColor = if (isDark) NeuColorDarkSurfaceCard else NeuColorLightSurface,
-    cornerRadius = 16.dp,
-    elevation = elevation,
-    blurRadius = blurRadius
-)
+): Modifier = composed {
+    val dark = isDark ?: isSystemInDarkTheme()
+    this.neuFlat(
+        lightShadowColor = if (dark) NeuColorDarkLightShadow else NeuColorLightLightShadow,
+        darkShadowColor = if (dark) NeuColorDarkDarkShadow else NeuColorLightDarkShadow,
+        backgroundColor = if (dark) NeuColorDarkSurfaceCard else NeuColorLightSurface,
+        cornerShape = cornerShape,
+        elevation = elevation,
+        blurRadius = blurRadius
+    )
+}
 
 fun Modifier.neuFlat(
-    isDark: Boolean = false,
+    isDark: Boolean? = null,
     cornerRadius: Dp = 16.dp,
     elevation: Dp = 6.dp,
     blurRadius: Dp = 10.dp
-): Modifier = this.neuFlat(
-    cornerShape = androidx.compose.foundation.shape.RoundedCornerShape(cornerRadius),
-    isDark = isDark,
-    elevation = elevation,
-    blurRadius = blurRadius
-)
+): Modifier = composed {
+    val dark = isDark ?: isSystemInDarkTheme()
+    this.neuFlat(
+        cornerShape = androidx.compose.foundation.shape.RoundedCornerShape(cornerRadius),
+        isDark = dark,
+        elevation = elevation,
+        blurRadius = blurRadius
+    )
+}
 
 fun Modifier.neuFlat(
     lightShadowColor: Color,
     darkShadowColor: Color,
     backgroundColor: Color,
     cornerRadius: Dp = 16.dp,
+    cornerShape: Shape? = null,
     elevation: Dp = 6.dp,
     blurRadius: Dp = 10.dp
 ): Modifier = this.drawWithCache {
-    val cornerRadiusPx = cornerRadius.toPx()
+    val cornerRadiusPx = cornerShape?.toCornerRadiusPx(size, this) ?: cornerRadius.toPx()
     val elevationPx = elevation.toPx()
     val blurRadiusPx = blurRadius.toPx()
 
@@ -96,13 +113,16 @@ fun Modifier.neuFlat(
         }
     }
 
-    val lightPaint = Paint().asFrameworkPaint().apply {
-        isAntiAlias = true
-        color = lightShadowColor.toArgb()
-        if (blurRadiusPx > 0f) {
-            maskFilter = BlurMaskFilter(blurRadiusPx, BlurMaskFilter.Blur.NORMAL)
+    val hasLightShadow = lightShadowColor != Color.Transparent && lightShadowColor.alpha > 0f
+    val lightPaint = if (hasLightShadow) {
+        Paint().asFrameworkPaint().apply {
+            isAntiAlias = true
+            color = lightShadowColor.toArgb()
+            if (blurRadiusPx > 0f) {
+                maskFilter = BlurMaskFilter(blurRadiusPx, BlurMaskFilter.Blur.NORMAL)
+            }
         }
-    }
+    } else null
 
     val bgPaint = Paint().asFrameworkPaint().apply {
         isAntiAlias = true
@@ -120,15 +140,17 @@ fun Modifier.neuFlat(
                 cornerRadiusPx,
                 darkPaint
             )
-            canvas.nativeCanvas.drawRoundRect(
-                -elevationPx,
-                -elevationPx,
-                size.width - elevationPx,
-                size.height - elevationPx,
-                cornerRadiusPx,
-                cornerRadiusPx,
-                lightPaint
-            )
+            if (lightPaint != null) {
+                canvas.nativeCanvas.drawRoundRect(
+                    -elevationPx,
+                    -elevationPx,
+                    size.width - elevationPx,
+                    size.height - elevationPx,
+                    cornerRadiusPx,
+                    cornerRadiusPx,
+                    lightPaint
+                )
+            }
             canvas.nativeCanvas.drawRoundRect(
                 0f,
                 0f,
@@ -147,39 +169,45 @@ fun Modifier.neuFlat(
  */
 fun Modifier.neuPressed(
     cornerShape: Shape,
-    isDark: Boolean = false,
+    isDark: Boolean? = null,
     elevation: Dp = 4.dp,
     blurRadius: Dp = 6.dp
-): Modifier = this.neuPressed(
-    lightShadowColor = if (isDark) NeuColorDarkLightShadow else NeuColorLightLightShadow,
-    darkShadowColor = if (isDark) NeuColorDarkDarkShadow else NeuColorLightDarkShadow,
-    backgroundColor = if (isDark) NeuColorDarkSurfaceCard else NeuColorLightSurface,
-    cornerRadius = 16.dp,
-    elevation = elevation,
-    blurRadius = blurRadius
-)
+): Modifier = composed {
+    val dark = isDark ?: isSystemInDarkTheme()
+    this.neuPressed(
+        lightShadowColor = if (dark) NeuColorDarkLightShadow else NeuColorLightLightShadow,
+        darkShadowColor = if (dark) NeuColorDarkDarkShadow else NeuColorLightDarkShadow,
+        backgroundColor = if (dark) NeuColorDarkSurfaceCard else NeuColorLightSurface,
+        cornerShape = cornerShape,
+        elevation = elevation,
+        blurRadius = blurRadius
+    )
+}
 
 fun Modifier.neuPressed(
-    isDark: Boolean = false,
+    isDark: Boolean? = null,
     cornerRadius: Dp = 16.dp,
     elevation: Dp = 4.dp,
     blurRadius: Dp = 6.dp
-): Modifier = this.neuPressed(
-    cornerShape = androidx.compose.foundation.shape.RoundedCornerShape(cornerRadius),
-    isDark = isDark,
-    elevation = elevation,
-    blurRadius = blurRadius
-)
+): Modifier = composed {
+    this.neuPressed(
+        cornerShape = androidx.compose.foundation.shape.RoundedCornerShape(cornerRadius),
+        isDark = isDark,
+        elevation = elevation,
+        blurRadius = blurRadius
+    )
+}
 
 fun Modifier.neuPressed(
     lightShadowColor: Color,
     darkShadowColor: Color,
     backgroundColor: Color,
     cornerRadius: Dp = 16.dp,
+    cornerShape: Shape? = null,
     elevation: Dp = 4.dp,
     blurRadius: Dp = 6.dp
 ): Modifier = this.drawWithCache {
-    val cornerRadiusPx = cornerRadius.toPx()
+    val cornerRadiusPx = cornerShape?.toCornerRadiusPx(size, this) ?: cornerRadius.toPx()
     val elevationPx = elevation.toPx()
     val blurRadiusPx = blurRadius.toPx()
 
@@ -198,14 +226,25 @@ fun Modifier.neuPressed(
         }
     }
 
-    val lightInnerPaint = Paint().asFrameworkPaint().apply {
-        isAntiAlias = true
-        color = lightShadowColor.toArgb()
-        style = android.graphics.Paint.Style.STROKE
-        strokeWidth = elevationPx * 2f
-        if (blurRadiusPx > 0f) {
-            maskFilter = BlurMaskFilter(blurRadiusPx, BlurMaskFilter.Blur.NORMAL)
+    val hasLightShadow = lightShadowColor != Color.Transparent && lightShadowColor.alpha > 0f
+    val lightInnerPaint = if (hasLightShadow) {
+        Paint().asFrameworkPaint().apply {
+            isAntiAlias = true
+            color = lightShadowColor.toArgb()
+            style = android.graphics.Paint.Style.STROKE
+            strokeWidth = elevationPx * 2f
+            if (blurRadiusPx > 0f) {
+                maskFilter = BlurMaskFilter(blurRadiusPx, BlurMaskFilter.Blur.NORMAL)
+            }
         }
+    } else null
+
+    val clipPath = android.graphics.Path().apply {
+        addRoundRect(
+            0f, 0f, size.width, size.height,
+            cornerRadiusPx, cornerRadiusPx,
+            android.graphics.Path.Direction.CW
+        )
     }
 
     onDrawWithContent {
@@ -221,18 +260,11 @@ fun Modifier.neuPressed(
             )
 
             canvas.save()
-            val clipPath = android.graphics.Path().apply {
-                addRoundRect(
-                    0f, 0f, size.width, size.height,
-                    cornerRadiusPx, cornerRadiusPx,
-                    android.graphics.Path.Direction.CW
-                )
-            }
             canvas.nativeCanvas.clipPath(clipPath)
 
             canvas.nativeCanvas.drawRoundRect(
-                -elevationPx,
-                -elevationPx,
+                elevationPx,
+                elevationPx,
                 size.width + elevationPx,
                 size.height + elevationPx,
                 cornerRadiusPx,
@@ -240,15 +272,17 @@ fun Modifier.neuPressed(
                 darkInnerPaint
             )
 
-            canvas.nativeCanvas.drawRoundRect(
-                elevationPx,
-                elevationPx,
-                size.width + elevationPx * 3f,
-                size.height + elevationPx * 3f,
-                cornerRadiusPx,
-                cornerRadiusPx,
-                lightInnerPaint
-            )
+            if (lightInnerPaint != null) {
+                canvas.nativeCanvas.drawRoundRect(
+                    -elevationPx,
+                    -elevationPx,
+                    size.width - elevationPx,
+                    size.height - elevationPx,
+                    cornerRadiusPx,
+                    cornerRadiusPx,
+                    lightInnerPaint
+                )
+            }
 
             canvas.restore()
         }
@@ -262,31 +296,36 @@ fun Modifier.neuPressed(
  */
 fun Modifier.neuConvex(
     cornerShape: Shape,
-    isDark: Boolean = false,
+    isDark: Boolean? = null,
     elevation: Dp = 6.dp,
     blurRadius: Dp = 10.dp
-): Modifier = this.neuConvex(
-    lightShadowColor = if (isDark) NeuColorDarkLightShadow else NeuColorLightLightShadow,
-    darkShadowColor = if (isDark) NeuColorDarkDarkShadow else NeuColorLightDarkShadow,
-    backgroundColor = if (isDark) NeuColorDarkSurfaceCard else NeuColorLightSurface,
-    lightGradientColor = if (isDark) Color(0xFF242B35) else Color(0xFFF5F8FC),
-    darkGradientColor = if (isDark) Color(0xFF14181D) else Color(0xFFCAD1DC),
-    cornerRadius = 16.dp,
-    elevation = elevation,
-    blurRadius = blurRadius
-)
+): Modifier = composed {
+    val dark = isDark ?: isSystemInDarkTheme()
+    this.neuConvex(
+        lightShadowColor = if (dark) NeuColorDarkLightShadow else NeuColorLightLightShadow,
+        darkShadowColor = if (dark) NeuColorDarkDarkShadow else NeuColorLightDarkShadow,
+        backgroundColor = if (dark) NeuColorDarkSurfaceCard else NeuColorLightSurface,
+        lightGradientColor = if (dark) NeuColorDarkGradLight else NeuColorLightGradLight,
+        darkGradientColor = if (dark) NeuColorDarkGradDark else NeuColorLightGradDark,
+        cornerShape = cornerShape,
+        elevation = elevation,
+        blurRadius = blurRadius
+    )
+}
 
 fun Modifier.neuConvex(
-    isDark: Boolean = false,
+    isDark: Boolean? = null,
     cornerRadius: Dp = 16.dp,
     elevation: Dp = 6.dp,
     blurRadius: Dp = 10.dp
-): Modifier = this.neuConvex(
-    cornerShape = androidx.compose.foundation.shape.RoundedCornerShape(cornerRadius),
-    isDark = isDark,
-    elevation = elevation,
-    blurRadius = blurRadius
-)
+): Modifier = composed {
+    this.neuConvex(
+        cornerShape = androidx.compose.foundation.shape.RoundedCornerShape(cornerRadius),
+        isDark = isDark,
+        elevation = elevation,
+        blurRadius = blurRadius
+    )
+}
 
 fun Modifier.neuConvex(
     lightShadowColor: Color,
@@ -295,18 +334,19 @@ fun Modifier.neuConvex(
     lightGradientColor: Color = Color.Unspecified,
     darkGradientColor: Color = Color.Unspecified,
     cornerRadius: Dp = 16.dp,
+    cornerShape: Shape? = null,
     elevation: Dp = 6.dp,
     blurRadius: Dp = 10.dp
 ): Modifier = this.drawWithCache {
-    val cornerRadiusPx = cornerRadius.toPx()
+    val cornerRadiusPx = cornerShape?.toCornerRadiusPx(size, this) ?: cornerRadius.toPx()
     val elevationPx = elevation.toPx()
     val blurRadiusPx = blurRadius.toPx()
 
     val isDarkBg = backgroundColor.luminance() < 0.5f
     val resolvedLightGrad = if (lightGradientColor != Color.Unspecified) lightGradientColor
-                            else if (isDarkBg) Color(0xFF242B35) else Color(0xFFF5F8FC)
+                            else if (isDarkBg) NeuColorDarkGradLight else NeuColorLightGradLight
     val resolvedDarkGrad = if (darkGradientColor != Color.Unspecified) darkGradientColor
-                           else if (isDarkBg) Color(0xFF14181D) else Color(0xFFCAD1DC)
+                           else if (isDarkBg) NeuColorDarkGradDark else NeuColorLightGradDark
 
     val darkPaint = Paint().asFrameworkPaint().apply {
         isAntiAlias = true
@@ -316,14 +356,21 @@ fun Modifier.neuConvex(
         }
     }
 
-    val lightPaint = Paint().asFrameworkPaint().apply {
-        isAntiAlias = true
-        color = lightShadowColor.toArgb()
-        if (blurRadiusPx > 0f) {
-            maskFilter = BlurMaskFilter(blurRadiusPx, BlurMaskFilter.Blur.NORMAL)
+    val hasLightShadow = lightShadowColor != Color.Transparent && lightShadowColor.alpha > 0f
+    val lightPaint = if (hasLightShadow) {
+        Paint().asFrameworkPaint().apply {
+            isAntiAlias = true
+            color = lightShadowColor.toArgb()
+            if (blurRadiusPx > 0f) {
+                maskFilter = BlurMaskFilter(blurRadiusPx, BlurMaskFilter.Blur.NORMAL)
+            }
         }
-    }
+    } else null
 
+    val baseBgPaint = Paint().asFrameworkPaint().apply {
+        isAntiAlias = true
+        color = backgroundColor.toArgb()
+    }
     val gradientShader = android.graphics.LinearGradient(
         0f, 0f,
         size.width, size.height,
@@ -348,15 +395,17 @@ fun Modifier.neuConvex(
                 darkPaint
             )
 
-            canvas.nativeCanvas.drawRoundRect(
-                -elevationPx,
-                -elevationPx,
-                size.width - elevationPx,
-                size.height - elevationPx,
-                cornerRadiusPx,
-                cornerRadiusPx,
-                lightPaint
-            )
+            if (lightPaint != null) {
+                canvas.nativeCanvas.drawRoundRect(
+                    -elevationPx,
+                    -elevationPx,
+                    size.width - elevationPx,
+                    size.height - elevationPx,
+                    cornerRadiusPx,
+                    cornerRadiusPx,
+                    lightPaint
+                )
+            }
 
             canvas.nativeCanvas.drawRoundRect(
                 0f,
@@ -376,31 +425,36 @@ fun Modifier.neuConvex(
  */
 fun Modifier.neuConcave(
     cornerShape: Shape,
-    isDark: Boolean = false,
+    isDark: Boolean? = null,
     elevation: Dp = 6.dp,
     blurRadius: Dp = 10.dp
-): Modifier = this.neuConcave(
-    lightShadowColor = if (isDark) NeuColorDarkLightShadow else NeuColorLightLightShadow,
-    darkShadowColor = if (isDark) NeuColorDarkDarkShadow else NeuColorLightDarkShadow,
-    backgroundColor = if (isDark) NeuColorDarkSurfaceCard else NeuColorLightSurface,
-    lightGradientColor = if (isDark) Color(0xFF242B35) else Color(0xFFF5F8FC),
-    darkGradientColor = if (isDark) Color(0xFF14181D) else Color(0xFFCAD1DC),
-    cornerRadius = 16.dp,
-    elevation = elevation,
-    blurRadius = blurRadius
-)
+): Modifier = composed {
+    val dark = isDark ?: isSystemInDarkTheme()
+    this.neuConcave(
+        lightShadowColor = if (dark) NeuColorDarkLightShadow else NeuColorLightLightShadow,
+        darkShadowColor = if (dark) NeuColorDarkDarkShadow else NeuColorLightDarkShadow,
+        backgroundColor = if (dark) NeuColorDarkSurfaceCard else NeuColorLightSurface,
+        lightGradientColor = if (dark) NeuColorDarkGradLight else NeuColorLightGradLight,
+        darkGradientColor = if (dark) NeuColorDarkGradDark else NeuColorLightGradDark,
+        cornerShape = cornerShape,
+        elevation = elevation,
+        blurRadius = blurRadius
+    )
+}
 
 fun Modifier.neuConcave(
-    isDark: Boolean = false,
+    isDark: Boolean? = null,
     cornerRadius: Dp = 16.dp,
     elevation: Dp = 6.dp,
     blurRadius: Dp = 10.dp
-): Modifier = this.neuConcave(
-    cornerShape = androidx.compose.foundation.shape.RoundedCornerShape(cornerRadius),
-    isDark = isDark,
-    elevation = elevation,
-    blurRadius = blurRadius
-)
+): Modifier = composed {
+    this.neuConcave(
+        cornerShape = androidx.compose.foundation.shape.RoundedCornerShape(cornerRadius),
+        isDark = isDark,
+        elevation = elevation,
+        blurRadius = blurRadius
+    )
+}
 
 fun Modifier.neuConcave(
     lightShadowColor: Color,
@@ -409,18 +463,19 @@ fun Modifier.neuConcave(
     lightGradientColor: Color = Color.Unspecified,
     darkGradientColor: Color = Color.Unspecified,
     cornerRadius: Dp = 16.dp,
+    cornerShape: Shape? = null,
     elevation: Dp = 6.dp,
     blurRadius: Dp = 10.dp
 ): Modifier = this.drawWithCache {
-    val cornerRadiusPx = cornerRadius.toPx()
+    val cornerRadiusPx = cornerShape?.toCornerRadiusPx(size, this) ?: cornerRadius.toPx()
     val elevationPx = elevation.toPx()
     val blurRadiusPx = blurRadius.toPx()
 
     val isDarkBg = backgroundColor.luminance() < 0.5f
     val resolvedLightGrad = if (lightGradientColor != Color.Unspecified) lightGradientColor
-                            else if (isDarkBg) Color(0xFF242B35) else Color(0xFFF5F8FC)
+                            else if (isDarkBg) NeuColorDarkGradLight else NeuColorLightGradLight
     val resolvedDarkGrad = if (darkGradientColor != Color.Unspecified) darkGradientColor
-                           else if (isDarkBg) Color(0xFF14181D) else Color(0xFFCAD1DC)
+                           else if (isDarkBg) NeuColorDarkGradDark else NeuColorLightGradDark
 
     val darkPaint = Paint().asFrameworkPaint().apply {
         isAntiAlias = true
@@ -430,14 +485,21 @@ fun Modifier.neuConcave(
         }
     }
 
-    val lightPaint = Paint().asFrameworkPaint().apply {
-        isAntiAlias = true
-        color = lightShadowColor.toArgb()
-        if (blurRadiusPx > 0f) {
-            maskFilter = BlurMaskFilter(blurRadiusPx, BlurMaskFilter.Blur.NORMAL)
+    val hasLightShadow = lightShadowColor != Color.Transparent && lightShadowColor.alpha > 0f
+    val lightPaint = if (hasLightShadow) {
+        Paint().asFrameworkPaint().apply {
+            isAntiAlias = true
+            color = lightShadowColor.toArgb()
+            if (blurRadiusPx > 0f) {
+                maskFilter = BlurMaskFilter(blurRadiusPx, BlurMaskFilter.Blur.NORMAL)
+            }
         }
-    }
+    } else null
 
+    val baseBgPaint = Paint().asFrameworkPaint().apply {
+        isAntiAlias = true
+        color = backgroundColor.toArgb()
+    }
     val gradientShader = android.graphics.LinearGradient(
         0f, 0f,
         size.width, size.height,
@@ -462,15 +524,17 @@ fun Modifier.neuConcave(
                 darkPaint
             )
 
-            canvas.nativeCanvas.drawRoundRect(
-                -elevationPx,
-                -elevationPx,
-                size.width - elevationPx,
-                size.height - elevationPx,
-                cornerRadiusPx,
-                cornerRadiusPx,
-                lightPaint
-            )
+            if (lightPaint != null) {
+                canvas.nativeCanvas.drawRoundRect(
+                    -elevationPx,
+                    -elevationPx,
+                    size.width - elevationPx,
+                    size.height - elevationPx,
+                    cornerRadiusPx,
+                    cornerRadiusPx,
+                    lightPaint
+                )
+            }
 
             canvas.nativeCanvas.drawRoundRect(
                 0f,

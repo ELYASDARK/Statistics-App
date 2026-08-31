@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ئامار</string>
+
+    <!-- Navigation -->
+    <string name="nav_dashboard">داشبۆرد</string>
+    <string name="nav_analysis">شیکاری</string>
+    <string name="nav_projects">پڕۆژەکان</string>
+    <string name="nav_save_project">پاشەکەوتکردن</string>
+
+    <!-- Common Actions -->
+    <string name="action_save">پاشەکەوتکردن</string>
+    <string name="action_cancel">پاشگەزبوونەوە</string>
+    <string name="action_delete">سڕینەوە</string>
+    <string name="action_edit">دەستکاری</string>
+    <string name="action_duplicate">لەبەرگرتنەوە</string>
+    <string name="action_export">هەناردەکردن</string>
+    <string name="action_import">هاوردەکردن</string>
+    <string name="action_share">هاوبەشکردن</string>
+    <string name="action_close">داخستن</string>
+    <string name="action_search">گەڕان</string>
+    <string name="action_clear_search">سڕینەوەی گەڕان</string>
+    <string name="action_reset">ڕێکخستنەوە</string>
+    <string name="action_help">یارمەتی</string>
+    <string name="action_dictionary">فەرهەنگ</string>
+
+    <!-- Save / Edit Project Modal -->
+    <string name="save_project_title">پاشەکەوتکردنی پڕۆژە</string>
+    <string name="product_name_label">ناوی بەرهەم</string>
+    <string name="product_name_hint">نموونە: بەرهەمی نوێ</string>
+    <string name="product_name_error_empty">تکایە ناوی بەرهەم بنووسە</string>
+    <string name="product_name_error_duplicate">پڕۆژەیەک بەم ناوە پێشتر هەیە</string>
+    <string name="project_saved_success">پڕۆژەکە بە سەرکەوتوویی پاشەکەوت کرا</string>
+    <string name="financial_preview">پوختەی دارایی</string>
+
+    <!-- Dashboard & Metrics -->
+    <string name="metric_revenue">داهات</string>
+    <string name="metric_net_profit">قازانجی پوختە</string>
+    <string name="metric_total_expenses">کۆی خەرجییەکان</string>
+    <string name="metric_profit_margin">ڕێژەی قازانج</string>
+    <string name="metric_breakeven_units">خاڵی یەکسانبوون (یەکە)</string>
+    <string name="metric_daily_burn">خەرجی ڕۆژانە</string>
+    <string name="metric_runway">ماوەی بەردەوامی (ڕۆژ)</string>
+    <string name="metric_cac">تێچووی ڕاکێشانی کڕیار (CAC)</string>
+    <string name="metric_roas">گەڕانەوەی خەرجی ڕیکلام (ROAS)</string>
+    <string name="metric_roi">گەڕانەوەی وەبەرهێنان (ROI)</string>
+    <string name="metric_ltv">بەهای کڕیار (LTV)</string>
+    <string name="metric_contribution_margin">مارجینی بەشداری</string>
+
+    <!-- Pricing & Direct Costs -->
+    <string name="section_pricing_direct_costs">نرخ و تێچووی ڕاستەوخۆ</string>
+    <string name="label_retail_price">نرخی فرۆشتنی بەرهەم</string>
+    <string name="label_sourcing_cost">تێچووی کڕین یان دروستکردنی کاڵا</string>
+    <string name="label_aov_multiplier">تێکڕای قەبارەی داواکاری (AOV)</string>
+    <string name="label_discounts">داشکاندن یان ئۆفەر</string>
+
+    <!-- Marketing & Acquisition -->
+    <string name="section_marketing_acquisition">بەبازاڕکردن و ڕاکێشانی کڕیار</string>
+    <string name="label_cac">تێچووی ڕاکێشانی کڕیار (CAC)</string>
+    <string name="label_ad_fee">تێچووی پلاتفۆرمی ڕیکلام</string>
+    <string name="label_ltv_multiplier">تێکڕای دووبارەکردنەوەی کڕین (LTV)</string>
+
+    <!-- Fulfillment & Operations -->
+    <string name="section_fulfillment_operations">گەیاندن و کارپێکردن</string>
+    <string name="label_shipping_cost">تێچووی گەیاندنی داواکاری</string>
+    <string name="label_ops_cost">تێچووی پاکەتکردن و عەمبار</string>
+
+    <!-- Returns & Risk Management -->
+    <string name="section_returns_risk">گەڕانەوە و بەڕێوەبردنی مەترسی</string>
+    <string name="label_rejection_rate">ڕێژەی ڕەتکردنەوە لە کاتی گەیاندن</string>
+    <string name="label_rts_shipping_fee">تێچووی گەڕانەوەی کاڵا (RTS)</string>
+    <string name="label_refund_rate">ڕێژەی گەڕانەوەی کاڵا لەلایەن کڕیارەوە</string>
+    <string name="label_refund_penalty">تێچووی زیانی گەڕانەوە</string>
+    <string name="label_damage_rate">ڕێژەی زیان پێگەیشتن لە ڕێگادا</string>
+    <string name="label_deadstock_rate">ڕێژەی کاڵای ماوە و نەفرۆشراو</string>
+
+    <!-- Overhead & Targets -->
+    <string name="section_overhead_targets">خەرجی جێگیر و ئامانجەکان</string>
+    <string name="label_fixed_monthly_expenses">کۆی خەرجییە جێگیرەکانی مانگانە</string>
+    <string name="label_target_profit_goal">ئامانجی قازانجی خاوێن</string>
+    <string name="label_project_duration_days">ماوەی پڕۆژە (ڕۆژ)</string>
+    <string name="label_capital_remittance_frequency">ماوەی وەرگرتنەوەی پارە (ڕۆژ)</string>
+
+    <!-- Projects Screen -->
+    <string name="projects_title">پڕۆژە پاشەکەوتکراوەکان</string>
+    <string name="projects_search_hint">گەڕان بەدوای بەرهەمدا...</string>
+    <string name="projects_empty">هیچ پڕۆژەیەک پاشەکەوت نەکراوە</string>
+    <string name="projects_filter_all">هەموو</string>
+    <string name="projects_filter_profit">قازانجدار</string>
+    <string name="projects_filter_loss">زیانلێکەوتوو</string>
+    <string name="delete_project_confirm">دڵنیایت لە سڕینەوەی ئەم پڕۆژەیە؟</string>
+
+    <!-- Dictionary Screen -->
+    <string name="dictionary_title">فەرهەنگی ئابووریی یەکە</string>
+    <string name="dictionary_search_hint">گەڕان لە فەرهەنگدا...</string>
+    <string name="dictionary_all_categories">هەموو بەشەکان</string>
+    <string name="dictionary_empty">هیچ زاراوەیەک نەدۆزرایەوە</string>
+
+    <!-- Timeframes & Units -->
+    <string name="timeframe_daily">ڕۆژانە</string>
+    <string name="timeframe_monthly">مانگانە</string>
+    <string name="timeframe_yearly">ساڵانە</string>
+    <string name="timeframe_total">گشتی</string>
+    <string name="currency_iqd">د.ع</string>
+    <string name="unit_pieces">دانە</string>
+    <string name="unit_days">ڕۆژ</string>
+    <string name="unit_percentage">٪</string>
+</resources>

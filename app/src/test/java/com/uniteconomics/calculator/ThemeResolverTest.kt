@@ -16,9 +16,9 @@ class ThemeResolverTest(
         @Parameterized.Parameters(name = "theme: {0} -> expectedColor: {1}")
         fun data(): Collection<Array<Any>> {
             return listOf(
-                arrayOf("light", "#f5f5f7"),
-                arrayOf("dark", "#0a0a0f"),
-                arrayOf("unknown_theme", "#0a0a0f")
+                arrayOf("light", "#E0E5EC"),
+                arrayOf("dark", "#171C21"),
+                arrayOf("unknown_theme", "#171C21")
             )
         }
     }

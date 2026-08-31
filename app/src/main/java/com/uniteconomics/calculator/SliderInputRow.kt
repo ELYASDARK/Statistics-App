@@ -3,20 +3,51 @@ package com.uniteconomics.calculator
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.systemGestureExclusion
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
@@ -25,10 +56,6 @@ import androidx.compose.ui.unit.sp
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
-
-private val US_SYMBOLS = DecimalFormatSymbols(Locale.US)
-private val DECIMAL_FORMAT = DecimalFormat("#,##0.0", US_SYMBOLS)
-private val INTEGER_FORMAT = DecimalFormat("#,##0", US_SYMBOLS)
 
 /**
  * Bi-directional numeric text input + Compose Slider row for 19 calculation inputs.
@@ -41,7 +68,9 @@ fun SliderInputRow(
     subLabel: String? = null,
     value: Double,
     onValueChange: (Double) -> Unit,
-    valueRange: ClosedFloatingPointRange<Float>,
+    minVal: Float = 0f,
+    maxVal: Float = 100f,
+    valueRange: ClosedFloatingPointRange<Float> = minVal..maxVal,
     step: Double = 1.0,
     unit: String,
     isMarked: Boolean = false,
@@ -49,19 +78,29 @@ fun SliderInputRow(
     onInfoClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val effectiveMin = if (valueRange != 0f..100f) valueRange.start else minVal
+    val effectiveMax = if (valueRange != 0f..100f) valueRange.endInclusive else maxVal
+    val effectiveRange = remember(effectiveMin, effectiveMax) { effectiveMin..effectiveMax }
     val neuColors = LocalNeumorphicColors.current
+    val focusManager = LocalFocusManager.current
 
     // Format helper for text field display with thousand separators
     fun formatDisplay(v: Double): String {
         return if (step < 1.0) {
-            DECIMAL_FORMAT.format(v)
+            synchronized(DECIMAL_FORMAT) { DECIMAL_FORMAT.format(v) }
         } else {
-            INTEGER_FORMAT.format(v.toLong())
+            synchronized(INTEGER_FORMAT) { INTEGER_FORMAT.format(kotlin.math.round(v).toLong()) }
         }
     }
 
-    var textInputState by remember(value) { mutableStateOf(formatDisplay(value)) }
+    var textInputState by remember { mutableStateOf(formatDisplay(value)) }
     var isFocused by remember { mutableStateOf(false) }
+
+    LaunchedEffect(value, isFocused) {
+        if (!isFocused) {
+            textInputState = formatDisplay(value)
+        }
+    }
 
     Column(
         modifier = modifier
@@ -94,28 +133,35 @@ fun SliderInputRow(
                         color = neuColors.textMain
                     )
                     
-                    // Info button for term explanation modal
+                    // Info button for term explanation modal with 48dp touch target
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier
-                            .size(20.dp)
-                            .neuConvex(
-                                lightShadowColor = neuColors.shadowLight,
-                                darkShadowColor = neuColors.shadowDark,
-                                backgroundColor = neuColors.surface,
-                                lightGradientColor = neuColors.shadowLight.copy(alpha = 0.4f),
-                                darkGradientColor = neuColors.shadowDark.copy(alpha = 0.2f),
-                                cornerRadius = 10.dp,
-                                elevation = 1.dp
-                            )
-                            .clickable { onInfoClick() }
+                            .sizeIn(minWidth = 48.dp, minHeight = 48.dp)
+                            .clip(CircleShape)
+                            .clickable(role = Role.Button) { onInfoClick() }
                     ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Info,
-                            contentDescription = "Term Info",
-                            tint = neuColors.textMuted.copy(alpha = 0.6f),
-                            modifier = Modifier.size(14.dp)
-                        )
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .size(24.dp)
+                                .neuConvex(
+                                    lightShadowColor = neuColors.shadowLight,
+                                    darkShadowColor = neuColors.shadowDark,
+                                    backgroundColor = neuColors.surface,
+                                    lightGradientColor = neuColors.shadowLight.copy(alpha = 0.4f),
+                                    darkGradientColor = neuColors.shadowDark.copy(alpha = 0.2f),
+                                    cornerRadius = 12.dp,
+                                    elevation = 1.dp
+                                )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Info,
+                                contentDescription = if (isKurdish) "زانیاری لەسەر $label" else "Information about $label",
+                                tint = neuColors.textMuted,
+                                modifier = Modifier.size(14.dp)
+                            )
+                        }
                     }
                 }
 
@@ -141,7 +187,7 @@ fun SliderInputRow(
                     Box(
                         modifier = Modifier
                             .widthIn(min = 90.dp, max = 120.dp)
-                            .height(44.dp)
+                            .heightIn(min = 48.dp)
                             .neuPressed(
                                 lightShadowColor = neuColors.shadowLight,
                                 darkShadowColor = neuColors.shadowDark,
@@ -155,18 +201,29 @@ fun SliderInputRow(
                         androidx.compose.foundation.text.BasicTextField(
                             value = textInputState,
                             onValueChange = { input ->
-                                textInputState = input
-                                val cleaned = input.replace(",", "")
+                                val limited = if (input.length > 25) input.take(25) else input
+                                textInputState = limited
+                                val cleaned = normalizeNumericInput(limited)
                                 val parsed = cleaned.toDoubleOrNull()
-                                if (parsed != null) {
+                                if (parsed != null && !parsed.isNaN() && !parsed.isInfinite()) {
                                     val clamped = parsed.coerceIn(
-                                        valueRange.start.toDouble(),
-                                        valueRange.endInclusive.toDouble()
+                                        effectiveMin.toDouble(),
+                                        effectiveMax.toDouble()
                                     )
                                     onValueChange(clamped)
                                 }
                             },
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .semantics {
+                                    contentDescription = if (isKurdish) "نووسینی بەهای $label" else "$label numeric input"
+                                }
+                                .onFocusChanged {
+                                    isFocused = it.isFocused
+                                    if (!it.isFocused) {
+                                        textInputState = formatDisplay(value)
+                                    }
+                                },
                             textStyle = LocalTextStyle.current.copy(
                                 textAlign = TextAlign.Center,
                                 fontSize = 14.sp,
@@ -174,7 +231,15 @@ fun SliderInputRow(
                                 color = neuColors.textMain
                             ),
                             singleLine = true,
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = if (step < 1.0) KeyboardType.Decimal else KeyboardType.Number,
+                                imeAction = ImeAction.Done
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    focusManager.clearFocus()
+                                }
+                            ),
                             cursorBrush = androidx.compose.ui.graphics.SolidColor(neuColors.primary)
                         )
                     }
@@ -189,51 +254,63 @@ fun SliderInputRow(
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        val fraction = ((value.toFloat() - valueRange.start) / (valueRange.endInclusive - valueRange.start)).coerceIn(0f, 1f)
+        val safeValue = if (value.isNaN() || value.isInfinite()) effectiveMin.toDouble() else value
+        val rangeDiff = (effectiveMax - effectiveMin)
+        val fraction = if (rangeDiff > 0f) {
+            ((safeValue.toFloat() - effectiveMin) / rangeDiff).coerceIn(0f, 1f)
+        } else 0f
         val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
 
-        // Bi-Directional Compose Slider with redesigned convex thumb & track
+        // Bi-Directional Compose Slider with accessibility semantics & systemGestureExclusion
         Slider(
-            value = value.toFloat().coerceIn(valueRange.start, valueRange.endInclusive),
+            value = safeValue.toFloat().coerceIn(effectiveMin, effectiveMax),
             onValueChange = { newFloatVal ->
-                val clamped = newFloatVal.toDouble().coerceIn(
-                    valueRange.start.toDouble(),
-                    valueRange.endInclusive.toDouble()
+                val safeFloat = if (newFloatVal.isNaN() || newFloatVal.isInfinite()) effectiveMin else newFloatVal
+                val clamped = safeFloat.toDouble().coerceIn(
+                    effectiveMin.toDouble(),
+                    effectiveMax.toDouble()
                 )
                 textInputState = formatDisplay(clamped)
                 onValueChange(clamped)
             },
-            valueRange = valueRange,
+            valueRange = effectiveRange,
             thumb = {
                 Box(
                     modifier = Modifier
-                        .size(22.dp)
-                        .neuConvex(
-                            lightShadowColor = neuColors.shadowLight,
-                            darkShadowColor = neuColors.shadowDark,
-                            backgroundColor = neuColors.surface,
-                            lightGradientColor = neuColors.shadowLight.copy(alpha = 0.6f),
-                            darkGradientColor = neuColors.shadowDark.copy(alpha = 0.3f),
-                            cornerRadius = 11.dp,
-                            elevation = 2.dp
-                        ),
+                        .size(48.dp)
+                        .systemGestureExclusion(),
                     contentAlignment = Alignment.Center
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(7.dp)
-                            .clip(CircleShape)
-                            .background(neuColors.primary)
+                            .size(22.dp)
+                            .neuConvex(
+                                lightShadowColor = neuColors.shadowLight,
+                                darkShadowColor = neuColors.shadowDark,
+                                backgroundColor = neuColors.surface,
+                                lightGradientColor = neuColors.shadowLight.copy(alpha = 0.6f),
+                                darkGradientColor = neuColors.shadowDark.copy(alpha = 0.3f),
+                                cornerRadius = 11.dp,
+                                elevation = 2.dp
+                            ),
+                        contentAlignment = Alignment.Center
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(2.dp)
+                                .size(7.dp)
                                 .clip(CircleShape)
-                                .background(Color.White)
-                                .align(Alignment.Center)
-                        )
+                                .background(neuColors.primary)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(2.dp)
+                                    .clip(CircleShape)
+                                    .background(neuColors.surface)
+                                    .align(Alignment.Center)
+                            )
+                        }
                     }
                 }
             },
@@ -248,10 +325,10 @@ fun SliderInputRow(
                     val height = size.height
                     val activeWidth = width * fraction
 
-                    // Inactive track with enhanced dark theme contrast
-                    val inactiveColor = if (neuColors.isDark) Color(0xFF2C3440) else neuColors.border
+                    // Inactive track using high-contrast token ensuring >= 3.0:1 contrast against background in Light and Dark mode
+                    val inactiveTrackColor = if (neuColors.isDark) Color(0xFF64748B) else Color(0xFF6B7C93)
                     drawRoundRect(
-                        color = inactiveColor,
+                        color = inactiveTrackColor,
                         size = size,
                         cornerRadius = androidx.compose.ui.geometry.CornerRadius(height / 2f, height / 2f)
                     )
@@ -274,8 +351,13 @@ fun SliderInputRow(
                     }
                 }
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .systemGestureExclusion()
+                .semantics {
+                    contentDescription = "$label: ${formatDisplay(value)} $unit"
+                    stateDescription = "${formatDisplay(value)} $unit"
+                }
         )
     }
 }
-

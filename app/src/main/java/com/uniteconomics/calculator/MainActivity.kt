@@ -1,48 +1,39 @@
 package com.uniteconomics.calculator
 
-import android.content.pm.ActivityInfo
+import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.core.view.WindowCompat
 
 class MainActivity : ComponentActivity() {
 
-    private var lastBackPressTime = 0L
-
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        // Protect sensitive financial metrics from OS Recents thumbnails and screen capture
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_SECURE,
+            WindowManager.LayoutParams.FLAG_SECURE
+        )
 
-        setupBackPressedCallback()
-
-        setContent {
-            AppTheme {
-                CalculatorApp()
+        // Tapjacking & Overlay Attack Defense (API 31+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            runCatching {
+                android.app.Activity::class.java.getMethod("setHideOverlayWindows", Boolean::class.javaPrimitiveType)
+                    .invoke(this, true)
             }
         }
-    }
 
-    private fun setupBackPressedCallback() {
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if (System.currentTimeMillis() - lastBackPressTime < 2000) {
-                    finish()
-                } else {
-                    lastBackPressTime = System.currentTimeMillis()
-                    Toast.makeText(
-                        this@MainActivity,
-                        "دووبارە پاشگەز بکە بۆ دەرچوون",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-        })
+        // Enable system-wide obscured touch rejection against transparent overlays
+        window.decorView.filterTouchesWhenObscured = true
+
+        setContent {
+            CalculatorApp()
+        }
     }
 }

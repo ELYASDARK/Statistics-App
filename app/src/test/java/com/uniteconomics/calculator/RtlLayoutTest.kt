@@ -1,6 +1,6 @@
 package com.uniteconomics.calculator
 
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class RtlLayoutTest {
@@ -12,31 +12,28 @@ class RtlLayoutTest {
         val barValues = listOf(100.0, 200.0, 300.0, 400.0, 500.0) // M1 to M5
         val isKurdish = true
 
-        val displayBarValues = if (isKurdish) barValues.reversed() else barValues
         val displayBarLabels = if (isKurdish) {
-            listOf("مانگی ٥", "مانگی ٤", "مانگی ٣", "مانگی ٢", "مانگی ١")
+            listOf("م١", "م٢", "م٣", "م٤", "م٥")
         } else {
             listOf("M1", "M2", "M3", "M4", "M5")
         }
 
-        // Canvas draws displayBarValues from physical left index 0 to physical right index 4:
-        // Physical index 0 (LEFT of Canvas) = displayBarValues[0] = 500.0 (Month 5)
-        // Physical index 4 (RIGHT of Canvas) = displayBarValues[4] = 100.0 (Month 1)
-        assertEquals(500.0, displayBarValues[0], 0.001) // Month 5 value at canvas LEFT
-        assertEquals(100.0, displayBarValues[4], 0.001) // Month 1 value at canvas RIGHT
+        // Under RTL, Canvas draws bar at index `i` with mirrored position: (barCount - 1 - i)
+        // Index 0 (Month 1 = 100.0) -> Drawn at physical Right (column 4)
+        // Index 4 (Month 5 = 500.0) -> Drawn at physical Left (column 0)
+        val barCount = barValues.size
+        val canvasPhysicalPositionForM1 = barCount - 1 - 0 // 4 (Physical Right)
+        val canvasPhysicalPositionForM5 = barCount - 1 - 4 // 0 (Physical Left)
 
-        // Compose Row under LayoutDirection.Rtl renders children starting at PHYSICAL RIGHT:
-        // displayBarLabels[0] = "مانگی ٥" -> placed at PHYSICAL RIGHT by Row in RTL
-        // displayBarLabels[4] = "مانگی ١" -> placed at PHYSICAL LEFT by Row in RTL
-        val rowPhysicalRightLabel = displayBarLabels[0]
-        val rowPhysicalLeftLabel = displayBarLabels[4]
+        assertEquals(4, canvasPhysicalPositionForM1)
+        assertEquals(0, canvasPhysicalPositionForM5)
+        assertEquals(100.0, barValues[0], 0.001)
+        assertEquals(500.0, barValues[4], 0.001)
 
-        assertEquals("مانگی ٥", rowPhysicalRightLabel)
-        assertEquals("مانگی ١", rowPhysicalLeftLabel)
-
-        // Verify mismatch:
-        assertFalse(rowPhysicalRightLabel == "مانگی ١")
-        assertFalse(rowPhysicalLeftLabel == "مانگی ٥")
+        // In Compose Row under RTL layout, index 0 is rendered at physical Right (matching Canvas column 4)
+        // and index 4 is rendered at physical Left (matching Canvas column 0).
+        assertEquals("م١", displayBarLabels[0])
+        assertEquals("م٥", displayBarLabels[4])
     }
 
     @Test

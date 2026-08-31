@@ -1,5 +1,6 @@
 package com.uniteconomics.calculator
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
 /**
@@ -10,24 +11,30 @@ import androidx.compose.ui.graphics.Color
 // Light Theme Color Tokens
 val NeuLightBg = Color(0xFFE0E5EC)
 val NeuLightSurface = Color(0xFFE0E5EC)
-val NeuLightShadowDark = Color(0xFFA3B1C6).copy(alpha = 0.45f)
-val NeuLightShadowLight = Color(0xFFFFFFFF).copy(alpha = 0.15f)
-val NeuLightPrimary = Color(0xFF2563EB)
-val NeuLightSuccess = Color(0xFF059669)
-val NeuLightWarning = Color(0xFFD97706)
-val NeuLightInfo = Color(0xFF0EA5E9)
+val NeuLightShadowDark = Color(0xFFA3B1C6).copy(alpha = 0.50f)
+val NeuLightShadowLight = Color(0xFFFFFFFF).copy(alpha = 0.85f)
+val NeuLightPrimary = Color(0xFF1D4ED8)
+val NeuLightSuccess = Color(0xFF065F46)
+val NeuLightWarning = Color(0xFF92400E)
+val NeuLightInfo = Color(0xFF0369A1)
 val NeuLightPurple = Color(0xFF7C3AED)
-val NeuLightLoss = Color(0xFFDC2626)
+val NeuLightLoss = Color(0xFFB91C1C)
 val NeuLightTextMain = Color(0xFF171C21)
-val NeuLightTextMuted = Color(0xFF718096)
+val NeuLightTextMuted = Color(0xFF4A5568)
 val NeuLightBorder = Color(0x20A3B1C6)
 val NeuLightCardBg = Color(0xFFE0E5EC)
+val NeuLightSurfaceVariant = Color(0xFFE4E9F0)
+val NeuLightPrimaryContainer = Color(0x1A1D4ED8)
+val NeuLightSuccessContainer = Color(0x14059669)
+val NeuLightWarningContainer = Color(0x14D97706)
+val NeuLightErrorContainer = Color(0x1ADC2626)
+val NeuLightOnPrimary = Color(0xFFFFFFFF)
 
 // Dark Theme Color Tokens
 val NeuDarkBg = Color(0xFF171C21)
 val NeuDarkSurface = Color(0xFF1E232B)
-val NeuDarkShadowDark = Color(0xFF0C0F13)
-val NeuDarkShadowLight = Color(0xFF242B35)
+val NeuDarkShadowDark = Color(0xFF0C0F13).copy(alpha = 0.85f)
+val NeuDarkShadowLight = Color.Transparent
 val NeuDarkPrimary = Color(0xFF60A5FA)
 val NeuDarkSuccess = Color(0xFF34D399)
 val NeuDarkWarning = Color(0xFFFBBF24)
@@ -38,10 +45,17 @@ val NeuDarkTextMain = Color(0xFFECF1F8)
 val NeuDarkTextMuted = Color(0xFF94A3B8)
 val NeuDarkBorder = Color(0x20242B35)
 val NeuDarkCardBg = Color(0xFF1E232B)
+val NeuDarkSurfaceVariant = Color(0xFF1E232B)
+val NeuDarkPrimaryContainer = Color(0x2660A5FA)
+val NeuDarkSuccessContainer = Color(0x1F34D399)
+val NeuDarkWarningContainer = Color(0x1FFBBF24)
+val NeuDarkErrorContainer = Color(0x26F87171)
+val NeuDarkOnPrimary = Color(0xFF0A0A0F)
 
 /**
  * Data class encapsulating complete Neumorphic theme palette.
  */
+@Immutable
 data class NeumorphicColors(
     val isDark: Boolean = false,
     val background: Color,

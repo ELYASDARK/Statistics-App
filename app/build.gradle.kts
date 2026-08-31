@@ -16,12 +16,38 @@ android {
         versionName = "1.0"
     }
 
+    signingConfigs {
+        create("release") {
+            val keystorePath = System.getenv("KEYSTORE_PATH")
+            val keystorePassword = System.getenv("KEYSTORE_PASSWORD")
+            val keyAlias = System.getenv("KEY_ALIAS")
+            val keyPassword = System.getenv("KEY_PASSWORD")
+
+            if (!keystorePath.isNullOrBlank() &&
+                !keystorePassword.isNullOrBlank() &&
+                !keyAlias.isNullOrBlank() &&
+                !keyPassword.isNullOrBlank()
+            ) {
+                val keyFile = file(keystorePath)
+                if (keyFile.exists()) {
+                    storeFile = keyFile
+                    storePassword = keystorePassword
+                    this.keyAlias = keyAlias
+                    this.keyPassword = keyPassword
+                }
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            signingConfig = signingConfigs.getByName("debug")
+            val releaseSigning = signingConfigs.getByName("release")
+            if (releaseSigning.storeFile != null) {
+                signingConfig = releaseSigning
+            }
         }
     }
     compileOptions {
@@ -51,7 +77,6 @@ kotlin {
 dependencies {
   // Core Android dependencies
   implementation(libs.androidx.core.ktx)
-  implementation(libs.androidx.security.crypto)
   implementation(libs.androidx.activity.compose)
 
   // Jetpack Compose dependencies
@@ -61,7 +86,6 @@ dependencies {
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.material.icons.core)
   implementation(libs.androidx.compose.material.icons.extended)
-  implementation(libs.material)
   implementation(libs.androidx.lifecycle.runtime.compose)
   implementation(libs.androidx.lifecycle.viewmodel.compose)
   debugImplementation(libs.androidx.compose.ui.tooling)
@@ -69,10 +93,7 @@ dependencies {
   // Splash Screen compat (supports API 23+)
   implementation(libs.androidx.core.splashscreen)
 
-  // Room SQLite Database dependencies
-  implementation(libs.androidx.room.runtime)
-  implementation(libs.androidx.room.ktx)
-
   // Testing dependencies
   testImplementation(libs.junit)
+  testImplementation(libs.kotlinx.coroutines.test)
 }

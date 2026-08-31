@@ -1,9 +1,9 @@
 package com.uniteconomics.calculator
 
 import android.app.Activity
-import androidx.compose.foundation.IndicationNodeFactory
+import android.content.Context
+import android.content.ContextWrapper
 import androidx.compose.foundation.LocalIndication
-import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -16,18 +16,52 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.node.DelegatableNode
+import android.os.Build
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.runtime.Immutable
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 
-private object NoIndication : IndicationNodeFactory {
-    override fun create(interactionSource: InteractionSource): DelegatableNode {
-        return object : Modifier.Node() {}
+/**
+ * Design system spacing tokens.
+ */
+@Immutable
+data class Spacing(
+    val xs: Dp = 4.dp,
+    val sm: Dp = 8.dp,
+    val md: Dp = 16.dp,
+    val lg: Dp = 24.dp,
+    val xl: Dp = 40.dp
+)
+
+val LocalSpacing = staticCompositionLocalOf { Spacing() }
+
+val MaterialTheme.spacing: Spacing
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalSpacing.current
+
+/**
+ * Material 3 WindowWidthSizeClass representation for adaptivity.
+ */
+enum class WindowWidthSizeClass {
+    Compact,
+    Medium,
+    Expanded;
+
+    companion object {
+        fun fromWidth(width: Dp): WindowWidthSizeClass = when {
+            width < 600.dp -> Compact
+            width < 840.dp -> Medium
+            else -> Expanded
+        }
     }
-
-    override fun hashCode(): Int = -1
-
-    override fun equals(other: Any?): Boolean = other === this
 }
 
 /**
@@ -41,22 +75,23 @@ val LocalNeumorphicColors = staticCompositionLocalOf { LightNeumorphicColors }
 val LocalExtendedColors = staticCompositionLocalOf {
     ExtendedColors(
         success = NeuLightSuccess,
-        onSuccess = Color(0xFFFFFFFF),
-        successContainer = Color(0x1F059669),
+        onSuccess = NeuLightOnPrimary,
+        successContainer = NeuLightSuccessContainer,
         onSuccessContainer = NeuLightSuccess,
         warning = NeuLightWarning,
-        onWarning = Color(0xFFFFFFFF),
-        warningContainer = Color(0x1FD97706),
+        onWarning = NeuLightOnPrimary,
+        warningContainer = NeuLightWarningContainer,
         onWarningContainer = NeuLightWarning,
         info = NeuLightInfo,
-        onInfo = Color(0xFFFFFFFF),
+        onInfo = NeuLightOnPrimary,
         purple = NeuLightPurple,
-        onPurple = Color(0xFFFFFFFF),
+        onPurple = NeuLightOnPrimary,
         textMuted = NeuLightTextMuted,
         border = NeuLightBorder
     )
 }
 
+@Immutable
 data class ExtendedColors(
     val success: Color,
     val onSuccess: Color,
@@ -76,44 +111,124 @@ data class ExtendedColors(
 
 private val DarkColorScheme = darkColorScheme(
     primary = NeuDarkPrimary,
-    onPrimary = Color(0xFF0A0A0F),
-    primaryContainer = Color(0x2660A5FA),
+    onPrimary = NeuDarkOnPrimary,
+    primaryContainer = NeuDarkPrimaryContainer,
     onPrimaryContainer = NeuDarkPrimary,
     secondary = NeuDarkInfo,
-    onSecondary = Color(0xFF0A0A0F),
+    onSecondary = NeuDarkOnPrimary,
     tertiary = NeuDarkPurple,
-    onTertiary = Color(0xFF0A0A0F),
-    background = Color(0xFF171C21),
+    onTertiary = NeuDarkOnPrimary,
+    background = NeuDarkBg,
     onBackground = NeuDarkTextMain,
-    surface = Color(0xFF171C21),
+    surface = NeuDarkBg,
     onSurface = NeuDarkTextMain,
-    surfaceVariant = Color(0xFF1E232B),
+    surfaceVariant = NeuDarkSurfaceVariant,
     onSurfaceVariant = NeuDarkTextMuted,
     error = NeuDarkLoss,
-    onError = Color(0xFF0A0A0F),
-    errorContainer = Color(0x26F87171),
+    onError = NeuDarkOnPrimary,
+    errorContainer = NeuDarkErrorContainer,
     onErrorContainer = NeuDarkLoss
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = NeuLightPrimary,
-    onPrimary = Color(0xFFFFFFFF),
-    primaryContainer = Color(0x1A2563EB),
+    onPrimary = NeuLightOnPrimary,
+    primaryContainer = NeuLightPrimaryContainer,
     onPrimaryContainer = NeuLightPrimary,
     secondary = NeuLightInfo,
-    onSecondary = Color(0xFFFFFFFF),
+    onSecondary = NeuLightOnPrimary,
     tertiary = NeuLightPurple,
-    onTertiary = Color(0xFFFFFFFF),
-    background = Color(0xFFE0E5EC),
+    onTertiary = NeuLightOnPrimary,
+    background = NeuLightBg,
     onBackground = NeuLightTextMain,
-    surface = Color(0xFFE0E5EC),
+    surface = NeuLightBg,
     onSurface = NeuLightTextMain,
-    surfaceVariant = Color(0xFFE4E9F0),
+    surfaceVariant = NeuLightSurfaceVariant,
     onSurfaceVariant = NeuLightTextMuted,
     error = NeuLightLoss,
-    onError = Color(0xFFFFFFFF),
-    errorContainer = Color(0x1ADC2626),
+    onError = NeuLightOnPrimary,
+    errorContainer = NeuLightErrorContainer,
     onErrorContainer = NeuLightLoss
+)
+
+val AppTypography = androidx.compose.material3.Typography(
+    displayMedium = androidx.compose.ui.text.TextStyle(
+        fontFamily = androidx.compose.ui.text.font.FontFamily.Default,
+        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+        fontSize = 30.sp,
+        lineHeight = 36.sp,
+        letterSpacing = (-0.6).sp
+    ),
+    headlineMedium = androidx.compose.ui.text.TextStyle(
+        fontFamily = androidx.compose.ui.text.font.FontFamily.Default,
+        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+        fontSize = 18.sp,
+        lineHeight = 25.sp,
+        letterSpacing = 0.sp
+    ),
+    titleLarge = androidx.compose.ui.text.TextStyle(
+        fontFamily = androidx.compose.ui.text.font.FontFamily.Default,
+        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+        fontSize = 24.sp,
+        lineHeight = 32.sp,
+        letterSpacing = 0.sp
+    ),
+    titleMedium = androidx.compose.ui.text.TextStyle(
+        fontFamily = androidx.compose.ui.text.font.FontFamily.Default,
+        fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
+        fontSize = 20.sp,
+        lineHeight = 28.sp,
+        letterSpacing = 0.sp
+    ),
+    titleSmall = androidx.compose.ui.text.TextStyle(
+        fontFamily = androidx.compose.ui.text.font.FontFamily.Default,
+        fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.sp
+    ),
+    bodyLarge = androidx.compose.ui.text.TextStyle(
+        fontFamily = androidx.compose.ui.text.font.FontFamily.Default,
+        fontWeight = androidx.compose.ui.text.font.FontWeight.Normal,
+        fontSize = 18.sp,
+        lineHeight = 26.sp,
+        letterSpacing = 0.sp
+    ),
+    bodyMedium = androidx.compose.ui.text.TextStyle(
+        fontFamily = androidx.compose.ui.text.font.FontFamily.Default,
+        fontWeight = androidx.compose.ui.text.font.FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 21.sp,
+        letterSpacing = 0.sp
+    ),
+    bodySmall = androidx.compose.ui.text.TextStyle(
+        fontFamily = androidx.compose.ui.text.font.FontFamily.Default,
+        fontWeight = androidx.compose.ui.text.font.FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 0.sp
+    ),
+    labelLarge = androidx.compose.ui.text.TextStyle(
+        fontFamily = androidx.compose.ui.text.font.FontFamily.Default,
+        fontWeight = androidx.compose.ui.text.font.FontWeight.Medium,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 2.0.sp
+    ),
+    labelMedium = androidx.compose.ui.text.TextStyle(
+        fontFamily = androidx.compose.ui.text.font.FontFamily.Default,
+        fontWeight = androidx.compose.ui.text.font.FontWeight.Medium,
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.sp
+    ),
+    labelSmall = androidx.compose.ui.text.TextStyle(
+        fontFamily = androidx.compose.ui.text.font.FontFamily.Default,
+        fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
+        fontSize = 10.sp,
+        lineHeight = 12.sp,
+        letterSpacing = 2.0.sp
+    )
 )
 
 val MaterialTheme.neumorphicColors: NeumorphicColors
@@ -121,45 +236,62 @@ val MaterialTheme.neumorphicColors: NeumorphicColors
     @ReadOnlyComposable
     get() = LocalNeumorphicColors.current
 
+fun Context.findActivity(): Activity? {
+    var context = this
+    while (context is ContextWrapper) {
+        if (context is Activity) return context
+        context = context.baseContext
+    }
+    return null
+}
+
 @Composable
 fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
+    val context = LocalContext.current
     val neumorphicColors = if (darkTheme) DarkNeumorphicColors else LightNeumorphicColors
-    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    val colorScheme = when {
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        }
+        darkTheme -> DarkColorScheme
+        else -> LightColorScheme
+    }
 
     val extendedColors = if (darkTheme) {
         ExtendedColors(
             success = NeuDarkSuccess,
-            onSuccess = Color(0xFF0A0A0F),
-            successContainer = Color(0x1F34D399),
+            onSuccess = NeuDarkOnPrimary,
+            successContainer = NeuDarkSuccessContainer,
             onSuccessContainer = NeuDarkSuccess,
             warning = NeuDarkWarning,
-            onWarning = Color(0xFF0A0A0F),
-            warningContainer = Color(0x1FFBBF24),
+            onWarning = NeuDarkOnPrimary,
+            warningContainer = NeuDarkWarningContainer,
             onWarningContainer = NeuDarkWarning,
             info = NeuDarkInfo,
-            onInfo = Color(0xFF0A0A0F),
+            onInfo = NeuDarkOnPrimary,
             purple = NeuDarkPurple,
-            onPurple = Color(0xFF0A0A0F),
+            onPurple = NeuDarkOnPrimary,
             textMuted = NeuDarkTextMuted,
             border = NeuDarkBorder
         )
     } else {
         ExtendedColors(
             success = NeuLightSuccess,
-            onSuccess = Color(0xFFFFFFFF),
-            successContainer = Color(0x14059669),
+            onSuccess = NeuLightOnPrimary,
+            successContainer = NeuLightSuccessContainer,
             onSuccessContainer = NeuLightSuccess,
             warning = NeuLightWarning,
-            onWarning = Color(0xFFFFFFFF),
-            warningContainer = Color(0x14D97706),
+            onWarning = NeuLightOnPrimary,
+            warningContainer = NeuLightWarningContainer,
             onWarningContainer = NeuLightWarning,
             info = NeuLightInfo,
-            onInfo = Color(0xFFFFFFFF),
+            onInfo = NeuLightOnPrimary,
             purple = NeuLightPurple,
-            onPurple = Color(0xFFFFFFFF),
+            onPurple = NeuLightOnPrimary,
             textMuted = NeuLightTextMuted,
             border = NeuLightBorder
         )
@@ -168,26 +300,25 @@ fun AppTheme(
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
-            val window = (view.context as Activity).window
-            val statusBarColor = if (darkTheme) Color(0xFF171C21) else Color(0xFFE0E5EC)
-            @Suppress("DEPRECATION")
-            window.statusBarColor = statusBarColor.toArgb()
-            @Suppress("DEPRECATION")
-            window.navigationBarColor = statusBarColor.toArgb()
-
-            val insetsController = WindowCompat.getInsetsController(window, view)
-            insetsController.isAppearanceLightStatusBars = !darkTheme
-            insetsController.isAppearanceLightNavigationBars = !darkTheme
+            val activity = view.context.findActivity()
+            if (activity != null) {
+                val window = activity.window
+                val insetsController = WindowCompat.getInsetsController(window, view)
+                insetsController.isAppearanceLightStatusBars = !darkTheme
+                insetsController.isAppearanceLightNavigationBars = !darkTheme
+            }
         }
     }
 
     CompositionLocalProvider(
         LocalNeumorphicColors provides neumorphicColors,
         LocalExtendedColors provides extendedColors,
-        LocalIndication provides NoIndication
+        LocalSpacing provides Spacing(),
+        LocalIndication provides androidx.compose.material3.ripple(color = neumorphicColors.primary.copy(alpha = 0.12f))
     ) {
         MaterialTheme(
             colorScheme = colorScheme,
+            typography = AppTypography,
             content = content
         )
     }

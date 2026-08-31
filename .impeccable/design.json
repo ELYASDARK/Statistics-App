@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-04T17:08:00Z",
+  "title": "Design System: Mono-Soft Neumorphic Financial Calculator",
+  "extensions": {
+    "colorMeta": {
+      "surface": {
+        "role": "neutral",
+        "displayName": "Light Base Surface",
+        "canonical": "#E0E5EC",
+        "tonalRamp": ["#0F1215", "#1E232B", "#38414F", "#5F6B7E", "#8E9BB0", "#B8C4D6", "#E0E5EC", "#F4F7FA"]
+      },
+      "primary": {
+        "role": "primary",
+        "displayName": "Electric Cobalt",
+        "canonical": "#2563EB",
+        "tonalRamp": ["#071433", "#0F2B66", "#174299", "#1F59CC", "#2563EB", "#598BFA", "#99BAFF", "#E0ECFF"]
+      },
+      "dark-surface": {
+        "role": "neutral",
+        "displayName": "Dark Base Canvas",
+        "canonical": "#171C21",
+        "tonalRamp": ["#090B0D", "#171C21", "#252D35", "#37424E", "#4C5B6B", "#667A8F", "#889CB5", "#B8C7DC"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display Metric",
+        "purpose": "Financial KPI metric totals and primary dashboard figures."
+      },
+      "headline": {
+        "displayName": "Section Headline",
+        "purpose": "Screen titles, card header titles, and modal dialog titles."
+      },
+      "body": {
+        "displayName": "Body & Description",
+        "purpose": "Parameter descriptions, scenario lists, and term definitions."
+      },
+      "label": {
+        "displayName": "Instrument Label Caps",
+        "purpose": "Technical metadata, uppercase tracking tags, and timeframe badges."
+      }
+    },
+    "shadows": [
+      {
+        "name": "neu-flat-light",
+        "value": "-6px -6px 10px rgba(255,255,255,0.35), 6px 6px 10px rgba(163,177,198,0.45)",
+        "purpose": "Extruded card elevation surface in Light mode."
+      },
+      {
+        "name": "neu-flat-dark",
+        "value": "-6px -6px 10px rgba(36,43,53,0.5), 6px 6px 10px rgba(12,15,19,0.8)",
+        "purpose": "Extruded card elevation surface in Dark mode."
+      },
+      {
+        "name": "neu-pressed-inset",
+        "value": "inset -4px -4px 6px rgba(255,255,255,0.35), inset 4px 4px 6px rgba(163,177,198,0.45)",
+        "purpose": "Recessed inset well for slider tracks, input fields, and active toggle states."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-tactile",
+        "value": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+        "purpose": "Tactile press response easing for buttons and active toggle states."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "mobile-max",
+        "value": "512px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Neumorphic Flat Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Extruded container card with soft top-left highlight and bottom-right shadow.",
+      "html": "<div class=\"ds-neu-card\"><div class=\"ds-neu-card-title\">UNIT ECONOMICS</div><div class=\"ds-neu-card-val\">$42.50</div></div>",
+      "css": ".ds-neu-card { background: #E0E5EC; border-radius: 16px; padding: 20px; box-shadow: -6px -6px 10px rgba(255,255,255,0.35), 6px 6px 10px rgba(163,177,198,0.45); font-family: Inter, sans-serif; } .ds-neu-card-title { font-size: 10px; font-weight: 600; letter-spacing: 0.2em; color: #718096; text-transform: uppercase; margin-bottom: 6px; } .ds-neu-card-val { font-size: 24px; font-weight: 700; color: #171C21; }"
+    },
+    {
+      "name": "Neumorphic Convex Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Tactile convex gradient button that presses inward on click.",
+      "html": "<button class=\"ds-neu-btn\">CALCULATE RISK</button>",
+      "css": ".ds-neu-btn { background: linear-gradient(145deg, #F5F8FC, #CAD1DC); border: none; border-radius: 9999px; padding: 12px 24px; font-family: Inter, sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: #2563EB; box-shadow: -4px -4px 8px rgba(255,255,255,0.4), 4px 4px 8px rgba(163,177,198,0.5); cursor: pointer; transition: all 0.15s ease; } .ds-neu-btn:hover { box-shadow: -2px -2px 4px rgba(255,255,255,0.4), 2px 2px 4px rgba(163,177,198,0.5); transform: translateY(1px); }"
+    },
+    {
+      "name": "Neumorphic Pressed Input Well",
+      "kind": "input",
+      "refersTo": "input-row",
+      "description": "Recessed inset well for numerical input and slider controls.",
+      "html": "<div class=\"ds-neu-input-well\"><span class=\"ds-neu-input-label\">RTS REJECTION %</span><input class=\"ds-neu-input-field\" value=\"12.5%\" readonly /></div>",
+      "css": ".ds-neu-input-well { background: #E0E5EC; border-radius: 12px; padding: 10px 16px; box-shadow: inset -3px -3px 6px rgba(255,255,255,0.35), inset 3px 3px 6px rgba(163,177,198,0.45); display: flex; align-items: center; justify-content: space-between; font-family: Inter, sans-serif; } .ds-neu-input-label { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; color: #718096; } .ds-neu-input-field { background: transparent; border: none; font-size: 14px; font-weight: 700; color: #171C21; text-align: right; width: 60px; outline: none; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Tactile Hardware Instrument Cluster",
+    "overview": "This system embodies a sophisticated Mono-Soft Neumorphic aesthetic, characterized by soft, extruded surfaces, recessed input wells, and a monochromatic ton-sur-ton palette. Built for mobile financial analysts, e-commerce founders, and venture investors, the brand personality is technical yet organic, aiming to eliminate visual fatigue through simulated light physics rather than harsh structural borders or loud saturated fills.",
+    "keyCharacteristics": [
+      "Tactile Depth Physics: Surfaces raise (neuFlat), press inward (neuPressed), convex bulge (neuConvex), or concave bevel (neuConcave) through multi-directional soft dual shadows.",
+      "Monochromatic Serenity: Primary palette centered on mid-gray-blue #E0E5EC (Light) and slate dark #171C21 / #1E232B (Dark) to keep dense data readable.",
+      "Instrument-Cluster Precision: Crisp Inter typography with wide uppercase tracking for metadata and dense numerical metrics.",
+      "Dual-Locale Harmony: Universal layout geometry seamlessly mirroring across English (LTR) and Kurdish Sorani (RTL)."
+    ],
+    "rules": [
+      {
+        "name": "The One Voice Rule",
+        "body": "Primary cobalt accent is used on ≤10% of any given screen. Elevation and depth, not loud color, dictate structural hierarchy.",
+        "section": "colors"
+      },
+      {
+        "name": "The Instrument Tracking Rule",
+        "body": "All auxiliary labels and uppercase metadata must use explicit tracking (0.2em) to evoke physical instrument cluster displays.",
+        "section": "typography"
+      },
+      {
+        "name": "The Soft Lighting Rule",
+        "body": "Light source is locked at top-left (-45° angle). All extruded surfaces push down-right shadows and reflect top-left highlights uniformly.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do maintain a consistent 45° top-left light source for all Neumorphic shadow offsets.",
+      "Do allow at least 24px-40px vertical breathing room between adjacent Neumorphic cards so shadows never collide.",
+      "Do use neuPressed for inset input fields and active toggle states.",
+      "Do support both LTR and RTL directionality natively using Jetpack Compose CompositionLocalProvider."
+    ],
+    "donts": [
+      "Don't use hard 1px black stroke borders around cards or buttons; rely on Neumorphic light physics for separation.",
+      "Don't flood surfaces with high-saturation background colors; keep canvas surfaces monochromatic #E0E5EC or #171C21.",
+      "Don't mix conflicting light angles across different components on the same screen."
+    ]
+  }
+}
