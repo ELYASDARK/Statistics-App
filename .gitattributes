@@ -1,0 +1,19 @@
+# GitHub Linguist language overrides
+# Ensures GitHub correctly classifies the project as 100% Kotlin
+
+# Build scripts, wrappers, and configuration
+gradlew linguist-vendored
+gradlew.bat linguist-vendored
+gradle/** linguist-vendored
+.idea/** linguist-vendored
+.github/** linguist-vendored
+build.gradle.kts linguist-documentation
+settings.gradle.kts linguist-documentation
+gradle.properties linguist-documentation
+*.properties linguist-documentation
+*.xml linguist-documentation
+*.json linguist-documentation
+*.md linguist-documentation
+
+# Kotlin source files
+*.kt linguist-detectable=true
