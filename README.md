@@ -38,7 +38,6 @@ The application empowers e-commerce founders, financial analysts, and venture in
 - **100% Jetpack Compose UI**: Pure declarative UI without legacy XML layouts, leveraging Material 3 and custom drawing modifiers.
 - **Tactile Neumorphic Modifier Engine**: Custom Canvas drawing modifiers (`neuFlat`, `neuPressed`, `neuConvex`, `neuConcave`) creating extruded surfaces, inner bevels, and multi-directional soft dual shadows (`#E0E5EC` Light / `#171C21` Dark).
 - **Hardened Platform Security**:
-  - `WindowManager.LayoutParams.FLAG_SECURE` to block OS Recents snapshot captures.
   - `setHideOverlayWindows(true)` and `filterTouchesWhenObscured = true` for anti-tapjacking protection.
   - `allowBackup="false"` and `<exclude>` backup rules preventing cloud & ADB data extraction.
   - `singleTask` and empty `taskAffinity` blocking StrandHogg task hijacking.

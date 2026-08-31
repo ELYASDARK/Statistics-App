@@ -84,6 +84,8 @@ data class CalculationResult(
     val netProfitPerProduct: Double = 0.0,
     val netProfitTotal: Double = 0.0,
     val revenue: Double = 0.0,
+    val displayNetProfit: Double = 0.0,
+    val displayRevenue: Double = 0.0,
     val targetDailyOrders: Double = 0.0,
     val dailyCashBurn: Double = 0.0,
     val targetSuccessfulOrders: Int = 0,
@@ -122,8 +124,6 @@ data class CalculationResult(
     val breakEvenUnits: Int get() = breakevenOrders
     val totalSent: Int get() = totalDispatchedOrders
     val totalExpenses: Double get() = totalProjectExpenses
-    val displayRevenue: Double get() = revenue
-    val displayNetProfit: Double get() = netProfitTotal
     val dailyTargetOrders: Double get() = targetDailyOrders
     val dailyBurn: Double get() = dailyCashBurn
 }
@@ -224,8 +224,10 @@ object CalculatorLogic {
 
             return CalculationResult(
                 netProfitPerProduct = (grossPerSuccess / aov),
-                netProfitTotal = lossDisplayNet,
+                netProfitTotal = lossTotalNet,
                 revenue = 0.0,
+                displayNetProfit = lossDisplayNet,
+                displayRevenue = 0.0,
                 targetDailyOrders = 0.0,
                 dailyCashBurn = dailyFixedBurn,
                 targetSuccessfulOrders = 0,
@@ -317,8 +319,10 @@ object CalculatorLogic {
 
         return CalculationResult(
             netProfitPerProduct = netPerProduct,
-            netProfitTotal = displayNet,
-            revenue = displayRevenue,
+            netProfitTotal = totalNetProfit,
+            revenue = totalRevenue,
+            displayNetProfit = displayNet,
+            displayRevenue = displayRevenue,
             targetDailyOrders = dailyTargetOrders,
             dailyCashBurn = max(dailyFixedBurn, dailyBurn),
             targetSuccessfulOrders = targetUnits,

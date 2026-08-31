@@ -296,7 +296,7 @@ private fun KpiTilesGrid(
                     TimeframeOption.MONTHLY -> if (isKurdish) "/مانگ" else "/mo"
                     TimeframeOption.TOTAL -> ""
                 }
-                "\u2066-${formatAmt(abs(result.netProfitTotal), false)} IQD$suffix\u2069"
+                "\u2066-${formatAmt(abs(result.displayNetProfit), false)} IQD$suffix\u2069"
             } else {
                 val suffix = when (netTimeframe) {
                     TimeframeOption.DAILY -> if (isKurdish) "/ڕۆژ" else "/day"
@@ -304,7 +304,7 @@ private fun KpiTilesGrid(
                     TimeframeOption.MONTHLY -> if (isKurdish) "/مانگ" else "/mo"
                     TimeframeOption.TOTAL -> ""
                 }
-                "${formatAmt(result.netProfitTotal, false)} IQD$suffix"
+                "${formatAmt(result.displayNetProfit, false)} IQD$suffix"
             }
 
             KpiTile(

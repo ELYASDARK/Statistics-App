@@ -53,17 +53,25 @@ class CalculatorLogicTest {
         val dailyResult = CalculatorLogic.runFinancialModel(dailyInputs)
         val totalInputs = CalculatorInputs(netTimeframe = TimeframeOption.TOTAL)
         val totalResult = CalculatorLogic.runFinancialModel(totalInputs)
-        assertEquals(totalResult.netProfitTotal / 30.0, dailyResult.netProfitTotal, 0.01)
+
+        // displayNetProfit scales by timeframe for display
+        assertEquals(totalResult.netProfitTotal / 30.0, dailyResult.displayNetProfit, 0.01)
+
+        // netProfitTotal and revenue remain unscaled baseline invariants for charts and diagrams
+        assertEquals(totalResult.netProfitTotal, dailyResult.netProfitTotal, 0.01)
+        assertEquals(totalResult.revenue, dailyResult.revenue, 0.01)
     }
 
     @Test
     fun testLossScenarioTimeframeScaling() {
         val dailyLossInputs = CalculatorInputs(cac = 50000.0, netTimeframe = TimeframeOption.DAILY)
         val dailyLossResult = CalculatorLogic.runFinancialModel(dailyLossInputs)
-        assertEquals(-15000.0, dailyLossResult.netProfitTotal, 0.01)
+        assertEquals(-15000.0, dailyLossResult.displayNetProfit, 0.01)
+        assertEquals(-450000.0, dailyLossResult.netProfitTotal, 0.01)
 
         val totalLossInputs = CalculatorInputs(cac = 50000.0, netTimeframe = TimeframeOption.TOTAL)
         val totalLossResult = CalculatorLogic.runFinancialModel(totalLossInputs)
+        assertEquals(-450000.0, totalLossResult.displayNetProfit, 0.01)
         assertEquals(-450000.0, totalLossResult.netProfitTotal, 0.01)
     }
 }
